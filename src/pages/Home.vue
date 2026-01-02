@@ -26,7 +26,7 @@
 
     <!-- 开始按钮（主要入口） -->
     <div class="startWrap">
-      <button class="startBtn" type="button" @click.stop="start">
+      <button class="startBtn btn" type="button" @click.stop="start">
         点击屏幕开始体验
       </button>
     </div>

@@ -199,20 +199,5 @@ h1 {
   justify-content: center;
 }
 
-.btn {
-  padding: 12px 18px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  background: #ff8a00;
-  color: #000;
-  font-weight: 700;
-}
-
-.btn.ghost {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
+/* Use global .btn / .btn-ghost tokens from src/style.css */
 </style>

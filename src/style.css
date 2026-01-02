@@ -7,14 +7,30 @@ body {
   background: #0f0f0f;
   color: #fff;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CSS variables for unified responsive sizing */
+:root {
+  --site-max-width: 900px;
+  --site-gap: 24px;
+  --radius-lg: 18px;
+  --radius-sm: 12px;
+  --btn-padding-vertical: 12px;
+  --btn-padding-horizontal: 18px;
+  --btn-font-size: 16px;
+  --btn-radius: 12px;
+  --ui-bg-1: rgba(255,255,255,0.06);
+  --ui-border: rgba(255,255,255,0.10);
 }
 
 /* 统一页面容器（所有页面都用这个类） */
 .app-page {
   min-height: 100vh;               /* 统一高度 */
-  width: min(900px, 95vw);         /* 统一宽度 */
+  width: min(var(--site-max-width), 95vw);         /* 统一宽度 */
   margin: 0 auto;                  /* 居中 */
-  padding: 24px;                   /* 统一内边距 */
+  padding: var(--site-gap);                   /* 统一内边距 */
   display: flex;
   flex-direction: column;
 }
@@ -22,29 +38,118 @@ body {
 /* 统一标题 */
 .page-title {
   margin: 0 0 16px;
-  font-size: 28px;
+  font-size: clamp(20px, 3.6vw, 28px);
   font-weight: 900;
   text-align: center;
 }
 
-/* 统一按钮风格（你原来的橙色按钮） */
-.btn-primary {
-  padding: 12px 18px;
-  font-size: 16px;
-  border-radius: 10px;
+/* Generic button tokens */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--btn-padding-vertical) var(--btn-padding-horizontal);
+  font-size: var(--btn-font-size);
+  border-radius: var(--btn-radius);
   border: none;
   cursor: pointer;
-  background: #ff8a00;
-  color: #000;
   font-weight: 800;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: #ffffff;
+  color: #0b0c10;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  border: 1px solid var(--ui-border);
 }
 
 .btn-ghost {
-  padding: 12px 18px;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* Force key sizing even when components use scoped styles */
+.btn, .btn-primary, .btn-secondary, .btn-ghost {
+  padding: var(--btn-padding-vertical) var(--btn-padding-horizontal) !important;
+  font-size: var(--btn-font-size) !important;
+  border-radius: var(--btn-radius) !important;
+}
+
+/* Small utilities for responsive images */
+.img-responsive, img, .img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Map some common local classnames to the global tokens to ensure uniformity */
+.primary {
+  background: var(--btn-primary, #fff) !important;
+  background: #ffffff !important;
+  color: #0b0c10 !important;
+  padding: var(--btn-padding-vertical) var(--btn-padding-horizontal) !important;
+  font-size: var(--btn-font-size) !important;
+  border-radius: var(--btn-radius) !important;
+  font-weight: 800 !important;
+}
+.secondary {
+  background: rgba(255,255,255,0.10) !important;
+  color: #fff !important;
+  padding: var(--btn-padding-vertical) var(--btn-padding-horizontal) !important;
+  font-size: var(--btn-font-size) !important;
+  border-radius: var(--btn-radius) !important;
+  border: 1px solid var(--ui-border) !important;
+}
+.back, .lang, .chip {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  border-radius: 12px !important;
+}
+
+/* preview small thumbnail */
+.preview {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  width: clamp(96px, 12vw, 140px);
+  height: clamp(96px, 12vw, 140px);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+}
+.previewImg { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* unified large CTA */
+.startBtn {
+  width: min(820px, 92vw);
+  height: clamp(56px, 9vw, 86px);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  color: #0b0c10;
+  font-size: clamp(18px, 4.2vw, 28px);
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* cards & thumbs */
+.card { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--ui-bg-1); border: 1px solid rgba(255,255,255,0.10); padding: 14px; box-sizing: border-box; }
+.thumb { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-sm); object-fit: cover; display: block; border: 1px solid rgba(255,255,255,0.10); }
+
+/* small responsive tweaks */
+@media (max-width: 900px) {
+  :root { --site-gap: 16px; --btn-font-size: 15px; --btn-padding-vertical: 10px; --btn-padding-horizontal: 14px; }
 }

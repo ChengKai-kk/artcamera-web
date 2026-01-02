@@ -60,12 +60,12 @@
       </div>
 
       <div class="btnRow">
-        <button class="primary" @click="shoot" :disabled="busy || !stream">
+        <button class="primary btn" @click="shoot" :disabled="busy || !stream">
           {{ photoDataUrl ? "重拍" : "拍照" }}
         </button>
 
         <button
-          class="secondary"
+          class="secondary btn"
           @click="confirm"
           :disabled="busy || !photoDataUrl"
         >

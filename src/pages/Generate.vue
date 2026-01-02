@@ -4,9 +4,7 @@
 
     <!-- 状态提示 -->
     <div v-if="status === 'idle'">
-      <button class="primary" @click="startGenerate">
-        开始生成
-      </button>
+      <button class="primary btn" @click="startGenerate">开始生成</button>
     </div>
 
     <div v-if="status === 'generating'">
@@ -18,7 +16,7 @@
       <p>生成完成</p>
       <img :src="resultUrl" class="result-image" />
       <div class="actions">
-        <button class="primary" @click="goSave">
+          <button class="primary btn" @click="goSave">
           去扫码保存
         </button>
       </div>
