@@ -16,7 +16,8 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  // 关键：GitHub Pages 部署在 /artcamera-web/ 下
+  history: createWebHistory("/artcamera-web/"),
   routes,
 });
 
