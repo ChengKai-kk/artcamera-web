@@ -9,7 +9,7 @@
       "id": "west_girl_01",
       "name": "西游·女生",
       "desc": "国风神话质感",
-      "cover": "/styles/west.jpg",
+      "cover": "styles/west.jpg",
       "audience": ["女生"],
       "tags": ["国风", "写真"]
     },
@@ -17,7 +17,7 @@
       "id": "anime_boy_01",
       "name": "二次元·男生",
       "desc": "动漫清新风",
-      "cover": "/styles/anime.jpg",
+      "cover": "styles/anime.jpg",
       "audience": ["男生"],
       "tags": ["动漫"]
     },
@@ -25,7 +25,7 @@
       "id": "retro_all_01",
       "name": "复古胶片",
       "desc": "氛围感拉满",
-      "cover": "/styles/retro.jpg",
+      "cover": "styles/retro.jpg",
       "audience": ["全部", "女生", "男生", "合照"],
       "tags": ["复古", "打卡"]
     }
