@@ -1,337 +1,214 @@
 <template>
-  <!-- 整屏可点：符合“点击屏幕开始体验” -->
-  <div class="kiosk app-page" @click="start">
-    <!-- 主视觉区：效果图轮播 -->
+  <div class="home-page" @click="start">
     <section class="hero" @click.stop="start">
-      <div class="tag">效果图</div>
-
-      <!-- 语言按钮（先做外观，后面再接功能） -->
-      <button class="lang" type="button" @click.stop="toggleLang">
-        A {{ langLabel }}
-      </button>
-
-      <div class="frame">
-        <div class="track" :style="trackStyle">
-          <div class="slide" v-for="(s, i) in slides" :key="i">
-            <img :src="s.src" class="img" :alt="s.title" />
-          </div>
-        </div>
-
-        <!-- 左下小预览（像你截图那样） -->
-        <div class="preview">
-          <img :src="slides[current].src" class="previewImg" alt="preview" />
-        </div>
+      <img :src="heroImage" class="hero-img" alt="hero" />
+      <div class="hero-overlay">
+        <div class="hero-badge">AI 启动</div>
+        <div class="hero-slogan">让艺术更有价值</div>
+        <div class="hero-slogan-en">MAKE DIGITAL ART MORE VALUABLE</div>
       </div>
     </section>
 
-    <!-- 开始按钮（主要入口） -->
-    <div class="startWrap">
-      <button class="startBtn btn" type="button" @click.stop="start">
+    <section class="flow-panel" @click.stop="start">
+      <button class="start-btn" type="button" @click.stop="start">
         点击屏幕开始体验
       </button>
-    </div>
 
-    <!-- 使用流程说明（底部 01/02/03） -->
-    <section class="flow" @click.stop="start">
-      <div class="card" v-for="(st, i) in steps" :key="i">
-        <div class="no">{{ String(i + 1).padStart(2, "0") }}</div>
-        <img :src="st.src" class="thumb" :alt="st.title" />
-        <div class="title">{{ st.title }}</div>
+      <div class="flow-cards">
+        <div v-for="step in steps" :key="step.number" class="flow-card">
+          <div class="flow-header">
+            <span class="flow-number">{{ step.number }}</span>
+            <span class="flow-title">{{ step.title }}</span>
+          </div>
+          <img :src="step.image" class="flow-img" :alt="step.title" />
+        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import effect1 from "../assets/effects/effect-1.jpg";
-import effect2 from "../assets/effects/effect-2.jpg";
-import effect3 from "../assets/effects/effect-3.jpg";
-
+import heroImage from "../assets/effects/effect-2.jpg";
 import step1 from "../assets/steps/step-1.jpg";
 import step2 from "../assets/steps/step-2.jpg";
 import step3 from "../assets/steps/step-3.jpg";
 
 const router = useRouter();
 
-const slides = [
-  { src: effect1, title: "效果 1" },
-  { src: effect2, title: "效果 2" },
-  { src: effect3, title: "效果 3" },
-];
-
 const steps = [
-  { src: step1, title: "选择风格" },
-  { src: step2, title: "拍摄/上传" },
-  { src: step3, title: "照片打印" }, // 你也可以改成“生成/保存”
+  { number: "01", title: "风格选择", image: step1 },
+  { number: "02", title: "照片拍摄", image: step2 },
+  { number: "03", title: "照片打印", image: step3 },
 ];
-
-const current = ref(0);
-let timer = null;
-
-// 轮播位移
-const trackStyle = computed(() => ({
-  transform: `translateX(-${current.value * 100}%)`,
-}));
-
-function next() {
-  current.value = (current.value + 1) % slides.length;
-}
 
 function start() {
-  router.push("/styles"); // 按流程进入“选择风格”
+  router.push("/styles");
 }
-
-// 语言按钮先做 UI（后面再接 i18n）
-const lang = ref("zh");
-const langLabel = computed(() => (lang.value === "zh" ? "简体中文" : "English"));
-function toggleLang() {
-  lang.value = lang.value === "zh" ? "en" : "zh";
-}
-
-onMounted(() => {
-  timer = setInterval(next, 3500);
-});
-onBeforeUnmount(() => {
-  if (timer) clearInterval(timer);
-  timer = null;
-});
 </script>
 
 <style scoped>
-/* 大屏竖屏：尽量占满，字体/按钮远距离可读 */
-.kiosk {
+.home-page {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: 1fr auto auto;
-  gap: clamp(14px, 2vh, 24px);
-  user-select: none;
-  width: min(var(--site-max-width), 92vw);
+  width: min(var(--site-max-width), 94vw);
   margin: 0 auto;
+  padding: var(--site-gap);
+  display: grid;
+  grid-template-rows: minmax(340px, 1fr) auto;
+  gap: clamp(14px, 2.4vh, 28px);
+  position: relative;
+  z-index: 1;
 }
-
 
 .hero {
   position: relative;
-  border-radius: 22px;
+  border-radius: 28px;
   overflow: hidden;
-  background: rgba(12, 22, 36, 0.6);
-  border: 1px solid rgba(120, 200, 255, 0.18);
-  box-shadow: 0 20px 60px rgba(5, 10, 18, 0.5);
-  min-height: clamp(360px, 46vh, 820px);
-  width: 100%;
+  border: 1px solid rgba(78, 135, 204, 0.35);
+  background: #d8e9ff;
+  box-shadow: 0 26px 50px rgba(120, 150, 190, 0.28);
+  min-height: clamp(420px, 56vh, 980px);
 }
 
-.hero::after {
-  content: "";
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 0%, rgba(47, 255, 215, 0.08) 50%, transparent 100%);
-  animation: sweep 6s ease-in-out infinite;
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-bottom: clamp(16px, 5.4vh, 78px);
+  transform: translateY(-10%);
+  color: #ffffff;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
-/* 顶部“效果图”标签 */
-.tag {
-  position: absolute;
-  top: 18px;
-  left: 18px;
-  z-index: 3;
-  padding: 8px 16px;
-  border-radius: 999px;
+.hero-badge {
+  padding: 20px 50px;
+  border-radius: 20px;
+  border: 2px dashed rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.18);
+  color: #9ad3ff;
   font-weight: 700;
-  font-size: clamp(14px, 2vh, 20px);
-  background: rgba(10, 18, 32, 0.7);
-  border: 1px solid rgba(120, 200, 255, 0.3);
-  backdrop-filter: blur(8px);
+  font-size: clamp(30px, 3.6vh, 66px);
+  letter-spacing: 3px;
+  line-height: 1.1;
+  backdrop-filter: blur(6px);
 }
 
-/* 右上语言按钮 */
-.lang {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 3;
-  border: 1px solid rgba(120, 200, 255, 0.3);
-  background: rgba(10, 18, 32, 0.6);
-  color: var(--text);
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: clamp(14px, 1.8vh, 18px);
-  cursor: pointer;
-}
-
-.frame {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.track {
-  height: 100%;
-  display: flex;
-  transition: transform 600ms ease;
-}
-
-.slide {
-  min-width: 100%;
-  height: 100%;
-}
-
-.img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* 左下小预览 */
-.preview {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
-  width: clamp(120px, 14vw, 180px);
-  height: clamp(120px, 14vw, 180px);
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(47, 255, 215, 0.7);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  z-index: 3;
-}
-.previewImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.startWrap {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.startBtn {
-  width: min(860px, 92vw);
-  height: clamp(64px, 8vh, 96px);
-  border: none;
-  border-radius: 22px;
-  background: linear-gradient(120deg, rgba(47, 255, 215, 0.95), rgba(79, 140, 255, 0.95));
-  color: #041018;
-  font-size: clamp(20px, 3vh, 32px);
+.hero-slogan {
+  font-size: clamp(32px, 4.2vh, 64px);
   font-weight: 800;
-  letter-spacing: 0.6px;
-  cursor: pointer;
-  box-shadow: 0 18px 40px rgba(47, 255, 215, 0.28);
 }
 
-/* 底部流程卡片 */
-.flow {
+.hero-slogan-en {
+  font-size: clamp(18px, 2.5vh, 30px);
+  letter-spacing: 3.2px;
+  opacity: 0.95;
+}
+
+.flow-panel {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(80, 140, 210, 0.28);
+  border-radius: 24px;
+  padding: clamp(20px, 3vh, 34px);
+  box-shadow: 0 20px 44px rgba(120, 140, 170, 0.2);
+  display: grid;
+  gap: clamp(16px, 2.6vh, 28px);
+  justify-items: center;
+}
+
+.start-btn {
+  width: min(860px, 90%);
+  margin: 0 auto;
+  height: clamp(68px, 8vh, 110px);
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #cf2a32, #b81d27);
+  color: #ffffff;
+  font-size: clamp(24px, 3.1vh, 40px);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  box-shadow: 0 20px 42px rgba(206, 42, 50, 0.32);
+}
+
+.flow-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(10px, 1.6vh, 16px);
+  gap: clamp(16px, 2.6vh, 24px);
   width: 100%;
 }
 
-
-
-.card {
+.flow-card {
   position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  background: rgba(12, 22, 36, 0.6);
-  border: 1px solid rgba(120, 200, 255, 0.18);
-  padding: 14px;
-  box-sizing: border-box;
+  border-radius: 20px;
+  padding: clamp(16px, 2.4vh, 26px);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(80, 140, 210, 0.25);
+  box-shadow: 0 18px 34px rgba(120, 140, 170, 0.22);
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  text-align: center;
+  justify-items: center;
 }
 
-.no {
+.flow-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.flow-number {
   font-weight: 800;
-  font-size: clamp(16px, 2vh, 22px);
-  opacity: 0.9;
-  margin-bottom: 10px;
+  font-size: clamp(22px, 3vh, 36px);
+  color: #4f6b8f;
 }
 
-.thumb {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 14px;
-  object-fit: cover;
-  display: block;
-  border: 1px solid rgba(120, 200, 255, 0.18);
-}
-
-.title {
-  margin-top: 8px;
-  font-size: clamp(13px, 1.6vh, 18px);
+.flow-title {
   font-weight: 700;
+  font-size: clamp(20px, 2.6vh, 32px);
+  color: #2d2f33;
 }
 
-/* 适配较小分辨率时缩放一点 */
-@media (max-width: 900px) {
-  .startBtn {
-    height: 64px;
-    font-size: 20px;
-  }
-  .tag {
-    font-size: 14px;
-  }
-  .flow {
-    gap: 10px;
-  }
+.flow-img {
+  width: 100%;
+  height: clamp(130px, 16vh, 240px);
+  object-fit: contain;
+  border-radius: 14px;
+  background: #f0f4fb;
+  border: 1px solid rgba(80, 140, 210, 0.2);
 }
 
 @media (max-width: 720px) {
-  .kiosk {
-    grid-template-rows: minmax(320px, 1fr) auto auto;
+  .home-page {
+    grid-template-rows: minmax(300px, 1fr) auto;
   }
-  .flow {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .preview {
-    width: 96px;
-    height: 96px;
+  .flow-cards {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
-  .kiosk {
-    gap: clamp(22px, 2.6vh, 36px);
-  }
   .hero {
-    min-height: clamp(620px, 64vh, 1400px);
+    min-height: clamp(720px, 66vh, 1400px);
   }
-  .preview {
-    width: clamp(160px, 16vw, 220px);
-    height: clamp(160px, 16vw, 220px);
-    border-radius: 18px;
+  .flow-card {
+    border-radius: 24px;
   }
-  .flow {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(10px, 1.4vh, 18px);
+  .flow-img {
+    height: clamp(120px, 12vh, 200px);
   }
-  .card {
-    border-radius: 22px;
-    padding: 12px;
-  }
-  .thumb {
-    aspect-ratio: 16 / 9;
-    border-radius: 12px;
-  }
-  .no {
-    font-size: clamp(14px, 1.6vh, 18px);
-    margin-bottom: 6px;
-  }
-  .title {
-    font-size: clamp(12px, 1.4vh, 16px);
-    margin-top: 6px;
-  }
-}
-
-@keyframes sweep {
-  0%, 100% { opacity: 0.1; transform: translateX(-10%); }
-  50% { opacity: 0.4; transform: translateX(10%); }
 }
 </style>

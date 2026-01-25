@@ -1,17 +1,28 @@
 <template>
   <div class="app-page camera-page">
-    <header class="top">
-      <button class="back" @click="goBack">← 返回</button>
-      <div class="title">拍照</div>
-      <div class="spacer"></div>
+    <header class="page-top">
+      <button class="home-btn" type="button" @click="goHome" aria-label="home">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4.2 3 11.4v7.4a1 1 0 0 0 1 1h5.2v-5.6h5.6v5.6H20a1 1 0 0 0 1-1v-7.4l-9-7.2Z" />
+        </svg>
+      </button>
+      <div>
+        <div class="page-title-cn">开始拍摄</div>
+        <div class="page-title-en">START SHOOTING</div>
+      </div>
+      <div class="page-timer">{{ timerText }}</div>
     </header>
 
-    <div class="hint panel">
-      当前风格：<b>{{ styleId || "未选择" }}</b>
+    <div class="check-row">
+      <div v-for="item in checks" :key="item.label" class="check-item">
+        <div class="check-icon" :class="item.ok ? 'ok' : 'no'">
+          <span>{{ item.ok ? "✓" : "×" }}</span>
+        </div>
+        <div class="check-text">{{ item.label }}</div>
+      </div>
     </div>
 
     <section class="stage">
-      <!-- 摄像头画面：当有照片时隐藏 -->
       <video
         ref="videoEl"
         class="video"
@@ -21,7 +32,6 @@
         v-show="!photoDataUrl"
       ></video>
 
-      <!-- 拍到的照片预览：覆盖在 video 上 -->
       <img
         v-if="photoDataUrl"
         class="photo overlay"
@@ -29,52 +39,32 @@
         alt="photo"
       />
 
-      <!-- 倒计时遮罩（在最上层） -->
       <div v-if="countdown > 0" class="countdown">
         {{ countdown }}
       </div>
 
-      <!-- 错误提示遮罩（在最上层） -->
       <div v-if="errorMsg" class="error">
         <div class="errTitle">摄像头不可用</div>
         <div class="errDesc">{{ errorMsg }}</div>
-        <button class="btn" @click="initCamera">重试</button>
+        <button class="btn btn-secondary" @click="initCamera">重试</button>
       </div>
     </section>
 
-    <section class="controls panel">
-      <div class="row">
-        <div class="label">延时</div>
-        <div class="chips">
-          <button
-            v-for="s in delayOptions"
-            :key="s"
-            class="chip"
-            :class="{ active: delaySec === s }"
-            @click="delaySec = s"
-            :disabled="busy"
-          >
-            {{ s === 0 ? "无" : s + "s" }}
-          </button>
-        </div>
-      </div>
+    <div class="tip-row">
+      <span class="tip-badge">温馨提示</span>
+      <span class="tip-text">拍摄时，请不要晃动手机和眼镜，拍摄效果越好哦</span>
+    </div>
 
-      <div class="btnRow">
-        <button class="primary btn" @click="shoot" :disabled="busy || !stream">
-          {{ photoDataUrl ? "重拍" : "拍照" }}
-        </button>
+    <div class="action-row">
+      <button class="btn btn-ghost" @click="goBack">返回</button>
+      <button class="btn btn-secondary" @click="retake" :disabled="busy">
+        重新拍摄
+      </button>
+      <button class="btn btn-primary" @click="confirm" :disabled="busy || !photoDataUrl">
+        点击确认
+      </button>
+    </div>
 
-        <button
-          class="secondary btn"
-          @click="confirm"
-          :disabled="busy || !photoDataUrl"
-        >
-          确认使用
-        </button>
-      </div>
-    </section>
-
-    <!-- 隐藏 canvas：用于从 video 截图 -->
     <canvas ref="canvasEl" class="hidden"></canvas>
   </div>
 </template>
@@ -86,46 +76,47 @@ import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
-// 从 /camera?styleId=xxx 里取 styleId
-const styleId = computed(() => route.query.styleId?.toString() || "");
-
 const videoEl = ref(null);
 const canvasEl = ref(null);
-
 const stream = ref(null);
 const errorMsg = ref("");
 
-const delayOptions = [0, 3, 5, 10];
-const delaySec = ref(3);
-
 const countdown = ref(0);
 const busy = ref(false);
+const photoDataUrl = ref("");
 
-const photoDataUrl = ref(""); // 拍照后的 base64 图片
+const themeId = ref("");
+const templateId = ref("");
+const delaySec = ref(3);
+
+const timer = ref(50);
+let timerId = null;
+
+const checks = [
+  { label: "五官清晰", ok: true },
+  { label: "正确镜头", ok: false },
+  { label: "面无遮挡", ok: false },
+  { label: "光线充足", ok: false },
+];
+
+const styleId = computed(() => {
+  if (themeId.value && templateId.value) return `${themeId.value}_${templateId.value}`;
+  return themeId.value || templateId.value || "default";
+});
+
+const timerText = computed(() => `${timer.value}s`);
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-/**
- * 确保 video 已经能读到 videoWidth / videoHeight
- * 防止截到 0x0 的空图
- */
 async function ensureVideoReady(video) {
   if (!video) return;
-
-  // readyState >= 2: HAVE_CURRENT_DATA
-  if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
-    return;
-  }
+  if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) return;
 
   await new Promise((resolve) => {
     const onReady = () => {
-      if (
-        video.readyState >= 2 &&
-        video.videoWidth > 0 &&
-        video.videoHeight > 0
-      ) {
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
         video.removeEventListener("loadedmetadata", onReady);
         video.removeEventListener("canplay", onReady);
         resolve();
@@ -138,8 +129,6 @@ async function ensureVideoReady(video) {
 
 async function initCamera() {
   errorMsg.value = "";
-  photoDataUrl.value = "";
-
   stopCamera();
 
   try {
@@ -156,10 +145,11 @@ async function initCamera() {
 
     if (videoEl.value) {
       videoEl.value.srcObject = s;
-      // play() 有时会被浏览器策略影响，但在 localhost + muted 通常没问题
       await videoEl.value.play();
       await ensureVideoReady(videoEl.value);
     }
+
+    await beginShoot();
   } catch (e) {
     errorMsg.value =
       "请允许浏览器使用摄像头权限。若不在 localhost/https 下运行，浏览器可能阻止摄像头。错误信息：" +
@@ -174,20 +164,11 @@ function stopCamera() {
   }
 }
 
-async function shoot() {
-  // 如果已有照片：点击“重拍”
-  if (photoDataUrl.value) {
-    photoDataUrl.value = "";
-    // ✅ 确保 video 继续播放（更稳）
-    videoEl.value?.play?.();
-    return;
-  }
-
+async function capturePhoto() {
   if (!videoEl.value || !canvasEl.value || !stream.value) return;
 
   busy.value = true;
   try {
-    // 延时倒计时
     if (delaySec.value > 0) {
       countdown.value = delaySec.value;
       while (countdown.value > 0) {
@@ -199,12 +180,10 @@ async function shoot() {
     const video = videoEl.value;
     const canvas = canvasEl.value;
 
-    // 关键：确保 video 准备好，避免 0x0
     await ensureVideoReady(video);
 
     const w = video.videoWidth;
     const h = video.videoHeight;
-
     canvas.width = w;
     canvas.height = h;
 
@@ -212,41 +191,76 @@ async function shoot() {
     ctx.drawImage(video, 0, 0, w, h);
 
     photoDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);
-
-    // Debug：确认是否真的截到了图（length 很大说明成功）
-    console.log("captured length:", photoDataUrl.value.length, "size:", w, h);
   } finally {
     busy.value = false;
     countdown.value = 0;
   }
 }
 
+async function beginShoot() {
+  photoDataUrl.value = "";
+  await capturePhoto();
+}
+
+function retake() {
+  if (busy.value) return;
+  beginShoot();
+}
+
 function confirm() {
-  // ✅ Generate 页读取的 key（统一）
   sessionStorage.setItem("styleId", styleId.value);
   sessionStorage.setItem("imageBase64", photoDataUrl.value);
-
-  // ✅ 兼容你原来的命名（保留）
   sessionStorage.setItem("artcam_styleId", styleId.value);
   sessionStorage.setItem("artcam_photo", photoDataUrl.value);
 
-  // ✅ 离开页面前关闭摄像头，避免资源占用
   stopCamera();
-
   router.push("/generate");
+}
+
+function goHome() {
+  stopCamera();
+  router.push("/");
 }
 
 function goBack() {
   stopCamera();
-  router.push("/styles");
+  router.push({ path: "/mode", query: { themeId: themeId.value, templateId: templateId.value } });
+}
+
+function startTimer() {
+  clearInterval(timerId);
+  timerId = setInterval(() => {
+    timer.value -= 1;
+    if (timer.value <= 0) {
+      clearInterval(timerId);
+      goHome();
+    }
+  }, 1000);
 }
 
 onMounted(() => {
+  themeId.value = route.query.themeId?.toString() || sessionStorage.getItem("themeId") || "";
+  templateId.value =
+    route.query.templateId?.toString() || sessionStorage.getItem("templateId") || "";
+
+  if (themeId.value) sessionStorage.setItem("themeId", themeId.value);
+  if (templateId.value) sessionStorage.setItem("templateId", templateId.value);
+
+  const delayFromRoute = Number(route.query.delay);
+  const delayFromStorage = Number(sessionStorage.getItem("photoDelaySec"));
+  if (!Number.isNaN(delayFromRoute)) {
+    delaySec.value = delayFromRoute;
+  } else if (!Number.isNaN(delayFromStorage)) {
+    delaySec.value = delayFromStorage;
+  }
+
+  startTimer();
   initCamera();
 });
 
 onBeforeUnmount(() => {
   stopCamera();
+  clearInterval(timerId);
 });
 </script>
 
@@ -255,61 +269,53 @@ onBeforeUnmount(() => {
   color: var(--text);
 }
 
-.top {
+.check-row {
   display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.check-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: clamp(10px, 1.4vh, 18px);
+  gap: 8px;
+  font-size: clamp(14px, 1.7vh, 20px);
+  color: #5a6675;
 }
 
-.back {
-  height: clamp(40px, 4.6vh, 54px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(10, 18, 32, 0.65);
-  color: var(--text);
-  font-size: clamp(14px, 1.6vh, 18px);
-  cursor: pointer;
+.check-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 800;
 }
 
-.title {
-  text-align: center;
-  font-size: clamp(18px, 2.2vh, 28px);
-  font-weight: 700;
-  letter-spacing: 1px;
+.check-icon.ok {
+  background: #d6f6e6;
+  color: #1b8b56;
 }
 
-.spacer {
-  height: 1px;
+.check-icon.no {
+  background: #ffd4d4;
+  color: #c02d2d;
 }
 
-.hint {
-  margin: 6px 2px 12px;
-  font-size: clamp(13px, 1.4vh, 16px);
-  opacity: 0.9;
-}
-
-/* 摄像头区域 */
 .stage {
   position: relative;
-  border-radius: 18px;
+  border-radius: 22px;
   overflow: hidden;
-  background: rgba(12, 22, 36, 0.6);
-  border: 1px solid rgba(120, 200, 255, 0.22);
+  background: #f1f6ff;
+  border: 3px solid #4aa4ff;
   aspect-ratio: 3 / 4;
   min-height: clamp(360px, 52vh, 920px);
+  box-shadow: 0 18px 36px rgba(80, 140, 210, 0.25);
 }
 
-.stage::after {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  border-radius: 16px;
-  border: 1px dashed rgba(47, 255, 215, 0.25);
-  pointer-events: none;
-}
-
-/* 关键：video 和 preview 都绝对定位，确保叠层一致 */
 .video,
 .photo {
   position: absolute;
@@ -320,28 +326,22 @@ onBeforeUnmount(() => {
   display: block;
 }
 
-.video {
-  z-index: 1;
-}
-
 .overlay {
   z-index: 2;
 }
 
-/* 倒计时遮罩（最上层） */
 .countdown {
   position: absolute;
   inset: 0;
   z-index: 3;
   display: grid;
   place-items: center;
-  font-size: clamp(64px, 10vh, 120px);
+  font-size: clamp(72px, 11vh, 140px);
   font-weight: 800;
-  background: rgba(4, 8, 16, 0.45);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.65);
+  color: #c6252d;
 }
 
-/* 错误遮罩（最上层） */
 .error {
   position: absolute;
   inset: 0;
@@ -350,100 +350,46 @@ onBeforeUnmount(() => {
   place-items: center;
   padding: 18px;
   text-align: center;
-  background: rgba(4, 8, 16, 0.65);
+  background: rgba(255, 255, 255, 0.75);
 }
+
 .errTitle {
-  font-size: clamp(18px, 2.2vh, 28px);
+  font-size: clamp(20px, 2.4vh, 32px);
   font-weight: 700;
 }
+
 .errDesc {
   margin-top: 8px;
-  font-size: clamp(13px, 1.4vh, 16px);
-  opacity: 0.85;
-}
-.btn {
-  margin-top: 12px;
-  height: clamp(44px, 5vh, 54px);
-  padding: 0 clamp(16px, 2vh, 22px);
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(120deg, rgba(47, 255, 215, 0.95), rgba(79, 140, 255, 0.95));
-  color: #041018;
-  font-weight: 700;
-  cursor: pointer;
+  font-size: clamp(14px, 1.6vh, 18px);
+  color: var(--muted);
 }
 
-.controls {
-  margin-top: clamp(12px, 1.6vh, 20px);
-  display: grid;
-  gap: 14px;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  gap: 10px;
-  align-items: center;
-}
-
-.label {
-  opacity: 0.85;
-  font-size: clamp(13px, 1.4vh, 16px);
-}
-
-.chips {
+.tip-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(15px, 1.8vh, 22px);
+  color: #c6252d;
 }
 
-.chip {
-  height: clamp(34px, 4.2vh, 46px);
-  padding: 0 clamp(12px, 1.8vh, 18px);
+.tip-badge {
+  padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(10, 18, 32, 0.6);
-  color: var(--text);
-  font-size: clamp(13px, 1.4vh, 16px);
-  cursor: pointer;
-}
-.chip.active {
-  background: linear-gradient(120deg, rgba(47, 255, 215, 0.95), rgba(79, 140, 255, 0.95));
-  color: #041018;
+  background: #c6252d;
+  color: #ffffff;
   font-weight: 700;
+  font-size: 15px;
 }
 
-.btnRow {
+.tip-text {
+  color: #c6252d;
+  font-weight: 600;
+}
+
+.action-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(12px, 1.6vh, 18px);
-}
-
-.primary,
-.secondary {
-  height: clamp(48px, 6vh, 62px);
-  border-radius: 14px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.primary {
-  background: linear-gradient(120deg, rgba(47, 255, 215, 0.95), rgba(79, 140, 255, 0.95));
-  color: #041018;
-}
-
-.secondary {
-  background: rgba(12, 22, 36, 0.7);
-  color: var(--text);
-  border: 1px solid rgba(120, 200, 255, 0.22);
-}
-
-.primary:disabled,
-.secondary:disabled,
-.chip:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .hidden {
@@ -451,27 +397,25 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 720px) {
-  .top {
-    grid-template-columns: 90px 1fr 90px;
+  .check-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .btnRow {
+  .action-row {
     grid-template-columns: 1fr;
   }
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
+  .check-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
   .stage {
     min-height: clamp(520px, 60vh, 1280px);
-    border-radius: 24px;
   }
-  .countdown {
-    font-size: clamp(96px, 12vh, 160px);
-  }
-  .controls {
-    gap: 18px;
-  }
-  .chip {
-    height: clamp(44px, 4.6vh, 64px);
+  .action-row {
+    gap: 20px;
   }
 }
 </style>

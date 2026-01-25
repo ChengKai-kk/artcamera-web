@@ -1,33 +1,62 @@
 {
-  "title": "请选择你喜欢的风格",
-  "filters": {
-    "audience": ["全部", "女生", "男生", "女童", "男童", "合照"],
-    "tags": ["全部", "打卡", "动漫", "写真", "国风", "复古"]
-  },
-  "styles": [
+  "title": "金山文博园",
+  "subtitle": "让我们一起加入金山文博园AI世界",
+  "cta": "样片模板展示",
+  "sample": "templates/template-2.jpg",
+  "themes": [
     {
-      "id": "west_girl_01",
-      "name": "西游·女生",
-      "desc": "国风神话质感",
+      "id": "west",
+      "number": "01",
+      "name": "趣味西游主题",
+      "en": "FUN JOURNEY TO THE WEST",
+      "tone": "blue",
       "cover": "styles/west.jpg",
-      "audience": ["女生"],
-      "tags": ["国风", "写真"]
+      "templatesLayout": "grid",
+      "templates": [
+        { "id": "flower_girl", "name": "繁花少女", "cover": "templates/template-1.jpg" },
+        { "id": "sun_bus", "name": "阳光巴士", "cover": "templates/template-2.jpg" },
+        { "id": "fireworks", "name": "雅集烟花", "cover": "templates/template-3.jpg" },
+        { "id": "pastoral", "name": "茗花女孩", "cover": "styles/anime.jpg" },
+        { "id": "poster", "name": "画报女郎", "cover": "styles/retro.jpg" },
+        { "id": "more", "name": "更多模板...", "cover": "" }
+      ]
     },
     {
-      "id": "anime_boy_01",
-      "name": "二次元·男生",
-      "desc": "动漫清新风",
-      "cover": "styles/anime.jpg",
-      "audience": ["男生"],
-      "tags": ["动漫"]
-    },
-    {
-      "id": "retro_all_01",
-      "name": "复古胶片",
-      "desc": "氛围感拉满",
+      "id": "real",
+      "number": "02",
+      "name": "写实风主题",
+      "en": "REALISTIC STYLE THEME",
+      "tone": "peach",
       "cover": "styles/retro.jpg",
-      "audience": ["全部", "女生", "男生", "合照"],
-      "tags": ["复古", "打卡"]
+      "templatesLayout": "grid",
+      "templates": [
+        { "id": "real_photo", "name": "真实风格照片", "cover": "templates/template-2.jpg" },
+        { "id": "guofeng", "name": "国风照片", "cover": "styles/west.jpg" },
+        { "id": "fridge_world", "name": "冰箱贴世界", "cover": "templates/template-1.jpg" },
+        { "id": "badge_world", "name": "吧唧世界", "cover": "styles/retro.jpg" },
+        { "id": "street_light", "name": "灯火街景", "cover": "templates/template-3.jpg" },
+        { "id": "city_poster", "name": "城市海报", "cover": "styles/anime.jpg" },
+        { "id": "film", "name": "创意胶片", "cover": "templates/template-2.jpg" },
+        { "id": "more", "name": "更多模板...", "cover": "" }
+      ]
+    },
+    {
+      "id": "dimension",
+      "number": "03",
+      "name": "打破次元壁",
+      "en": "BREAK THE DIMENSIONAL WALL",
+      "tone": "lavender",
+      "cover": "styles/anime.jpg",
+      "templatesLayout": "grid",
+      "templates": [
+        { "id": "toy", "name": "潮玩手办", "cover": "styles/west.jpg" },
+        { "id": "anime_avatar", "name": "动漫头像", "cover": "styles/anime.jpg" },
+        { "id": "fairy", "name": "童话插画", "cover": "templates/template-1.jpg" },
+        { "id": "future_city", "name": "未来城市", "cover": "templates/template-3.jpg" },
+        { "id": "sketch", "name": "手绘海报", "cover": "templates/template-2.jpg" },
+        { "id": "neon", "name": "霓虹幻境", "cover": "styles/retro.jpg" },
+        { "id": "more", "name": "更多模板...", "cover": "" }
+      ]
     }
   ]
 }

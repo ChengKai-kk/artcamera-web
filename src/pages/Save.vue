@@ -1,12 +1,6 @@
 <template>
-  <div class="app-page save-page">
-    <header class="page-head">
-      <div class="eyebrow">Art Camera</div>
-      <h1 class="page-title">扫码保存</h1>
-      <div class="page-subtitle">请使用手机扫码保存作品</div>
-    </header>
-
-    <div v-if="!resultUrl" class="empty">
+  <div class="save-page" :class="{ 'has-result': resultUrl }" :style="pageStyle">
+    <div v-if="!resultUrl" class="empty panel">
       <p>没有找到生成结果，请先生成图片。</p>
       <div class="actions">
         <button class="btn btn-primary" @click="goGenerate">去生成</button>
@@ -14,31 +8,24 @@
       </div>
     </div>
 
-    <div v-else class="content">
-      <div class="tip">
-        用手机扫码打开图片链接，然后长按图片保存（链接可能会过期，请尽快保存）<br />
-        <span class="idleTip">无操作 {{ idleSeconds }} 秒将自动返回首页</span>
+    <div v-else class="save-content">
+      <div class="qr-card">
+        <div class="robot">AI</div>
+        <div class="qr-title">照片下载中</div>
+        <div class="qr-frame">
+          <img v-if="qrDataUrl" :src="qrDataUrl" class="qr-img" alt="qr" />
+          <div v-else class="loading">二维码生成中...</div>
+          <div class="qr-label">二维码</div>
+        </div>
       </div>
 
-      <div class="qr-box">
-        <img v-if="qrDataUrl" :src="qrDataUrl" class="qr-img" alt="qr" />
-        <div v-else class="loading">二维码生成中...</div>
-      </div>
-
-      <div class="img-box">
-        <img :src="resultUrl" class="result-img" alt="result" />
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-ghost" @click="goGenerate">返回生成页</button>
-        <button class="btn btn-primary" @click="goHome">返回首页</button>
-      </div>
+      <div class="qr-cta">扫描二维码领取电子版照片</div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import QRCode from "qrcode";
 
@@ -47,50 +34,26 @@ const router = useRouter();
 const resultUrl = ref("");
 const qrDataUrl = ref("");
 
-// ====== 无操作自动回首页 ======
-const IDLE_MS = 60 * 1000; // 60 秒
-const idleSeconds = ref(Math.floor(IDLE_MS / 1000));
+const IDLE_MS = 60 * 1000;
 let idleTimer = null;
-let countdownTimer = null;
-let lastActiveAt = Date.now();
+
+const pageStyle = computed(() => {
+  if (!resultUrl.value) return {};
+  return {
+    backgroundImage: `url(${resultUrl.value})`,
+  };
+});
 
 function resetIdle() {
-  lastActiveAt = Date.now();
-  idleSeconds.value = Math.ceil(IDLE_MS / 1000);
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = setTimeout(() => {
-    router.replace("/"); // 超时直接回首页，不堆栈历史
+    router.replace("/");
   }, IDLE_MS);
 }
 
-function bindIdleEvents() {
-  const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"];
-  const opts = { passive: true };
-  events.forEach((ev) => window.addEventListener(ev, resetIdle, opts));
-
-  // 初始化一次
-  resetIdle();
-  countdownTimer = setInterval(() => {
-    const elapsed = Date.now() - lastActiveAt;
-    const left = Math.max(0, Math.ceil((IDLE_MS - elapsed) / 1000));
-    idleSeconds.value = left;
-  }, 1000);
-
-  return () => {
-    events.forEach((ev) => window.removeEventListener(ev, resetIdle));
-    if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = null;
-    if (countdownTimer) clearInterval(countdownTimer);
-    countdownTimer = null;
-  };
-}
-
-let unbindIdle = null;
-
-// ====== 业务逻辑 ======
 async function makeQr(url) {
   qrDataUrl.value = await QRCode.toDataURL(url, {
-    width: 360,
+    width: 320,
     margin: 1,
   });
 }
@@ -103,16 +66,26 @@ function goHome() {
   router.push("/");
 }
 
-onMounted(async () => {
-  // 读取生成结果
-  resultUrl.value = sessionStorage.getItem("resultUrl") || "";
+function bindIdleEvents() {
+  const events = ["mousemove", "mousedown", "keydown", "touchstart", "scroll"];
+  const opts = { passive: true };
+  events.forEach((ev) => window.addEventListener(ev, resetIdle, opts));
+  resetIdle();
 
-  // 生成二维码
+  return () => {
+    events.forEach((ev) => window.removeEventListener(ev, resetIdle));
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = null;
+  };
+}
+
+let unbindIdle = null;
+
+onMounted(async () => {
+  resultUrl.value = sessionStorage.getItem("resultUrl") || "";
   if (resultUrl.value) {
     await makeQr(resultUrl.value);
   }
-
-  // 绑定无操作回首页
   unbindIdle = bindIdleEvents();
 });
 
@@ -123,118 +96,125 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .save-page {
-  align-items: center;
-  color: var(--text);
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: clamp(16px, 3vh, 40px);
 }
 
-.page-head {
-  text-align: center;
+.save-page.has-result::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
 }
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-size: clamp(12px, 1.4vh, 16px);
-  color: rgba(232, 241, 255, 0.65);
+.save-content,
+.empty {
+  position: relative;
+  z-index: 1;
 }
 
 .empty {
-  margin-top: clamp(24px, 4vh, 40px);
   text-align: center;
+  display: grid;
+  gap: 12px;
+  font-size: clamp(16px, 2vh, 22px);
 }
 
-.content {
-  width: min(900px, 95vw);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(14px, 2vh, 22px);
+.save-content {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
 }
 
-.tip {
-  opacity: 0.92;
-  font-size: clamp(13px, 1.6vh, 18px);
-  text-align: center;
-  line-height: 1.5;
-}
-
-.idleTip {
-  display: inline-block;
-  margin-top: 6px;
-  opacity: 0.8;
-  font-size: clamp(12px, 1.4vh, 16px);
-}
-
-.qr-box {
-  background: rgba(10, 18, 32, 0.8);
-  padding: clamp(12px, 1.6vh, 20px);
+.qr-card {
+  width: min(420px, 86vw);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 18px;
-  border: 1px solid rgba(47, 255, 215, 0.4);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  position: relative;
+}
+
+.robot {
+  position: absolute;
+  top: -18px;
+  left: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #5a8fff;
+  color: #ffffff;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgba(90, 143, 255, 0.35);
+}
+
+.qr-title {
+  font-weight: 700;
+  color: #2d2f33;
+  font-size: clamp(18px, 2.2vh, 26px);
+}
+
+.qr-frame {
+  width: min(260px, 60vw);
+  aspect-ratio: 1 / 1;
+  background: #f1f1f1;
+  border-radius: 14px;
+  border: 2px solid rgba(180, 180, 180, 0.7);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .qr-img {
-  width: clamp(220px, 30vh, 360px);
-  height: clamp(220px, 30vh, 360px);
-  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.qr-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(14px, 1.6vh, 18px);
+  color: #5a6675;
 }
 
 .loading {
-  color: var(--text);
-  font-size: clamp(13px, 1.4vh, 16px);
-}
-
-.img-box {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.result-img {
-  max-width: 100%;
-  max-height: 58vh;
-  object-fit: contain;
-  border-radius: 18px;
-  border: 1px solid rgba(120, 200, 255, 0.28);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4);
+  color: #5a6675;
+  font-size: clamp(14px, 1.6vh, 18px);
 }
 
 .actions {
   display: flex;
-  gap: clamp(10px, 1.6vh, 16px);
-  margin-top: 6px;
-  flex-wrap: wrap;
+  gap: 12px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-/* Use global .btn / .btn-ghost tokens from src/styles/global.css */
-
-@media (max-width: 720px) {
-  .content {
-    width: min(540px, 94vw);
-  }
-  .qr-img {
-    width: clamp(180px, 28vh, 280px);
-    height: clamp(180px, 28vh, 280px);
-  }
-  .result-img {
-    max-height: 48vh;
-  }
-}
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  .content {
-    width: min(1200px, 92vw);
-  }
-  .qr-img {
-    width: clamp(320px, 32vh, 460px);
-    height: clamp(320px, 32vh, 460px);
-  }
-  .result-img {
-    max-height: 62vh;
-  }
-  .tip {
-    font-size: clamp(16px, 1.8vh, 22px);
-  }
+.qr-cta {
+  padding: 12px 28px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #cf2a32, #b81d27);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 12px 26px rgba(207, 42, 50, 0.32);
+  font-size: clamp(16px, 2vh, 24px);
 }
 </style>
