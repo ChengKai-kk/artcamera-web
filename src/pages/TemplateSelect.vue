@@ -21,7 +21,61 @@
     </section>
 
     <section v-else class="panel template-panel">
-      <div class="grid-layout">
+      <div v-if="useFeatureLayout" class="feature-layout">
+        <button
+          v-if="mainTemplate"
+          class="feature-card feature-main"
+          :class="{ disabled: mainTemplate.id === 'more' && !mainTemplate.cover }"
+          type="button"
+          @click="selectTemplate(mainTemplate)"
+        >
+          <div class="template-thumb large" :class="{ empty: !mainTemplate.cover }">
+            <img
+              v-if="mainTemplate.cover"
+              :src="templateCover(mainTemplate)"
+              :alt="mainTemplate.name"
+            />
+            <div v-else class="placeholder">更多模板...</div>
+            <div v-if="mainTemplate.cover" class="template-label">{{ mainTemplate.name }}</div>
+          </div>
+        </button>
+
+        <div class="feature-side">
+          <button
+            v-for="tpl in sideTemplates"
+            :key="tpl.id"
+            class="feature-card feature-side-card"
+            :class="{ disabled: tpl.id === 'more' && !tpl.cover }"
+            type="button"
+            @click="selectTemplate(tpl)"
+          >
+            <div class="template-thumb" :class="{ empty: !tpl.cover }">
+              <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
+              <div v-else class="placeholder">更多模板...</div>
+              <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="feature-bottom">
+          <button
+            v-for="tpl in bottomTemplates"
+            :key="tpl.id"
+            class="feature-card feature-bottom-card"
+            :class="{ disabled: tpl.id === 'more' && !tpl.cover }"
+            type="button"
+            @click="selectTemplate(tpl)"
+          >
+            <div class="template-thumb small" :class="{ empty: !tpl.cover }">
+              <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
+              <div v-else class="placeholder">更多模板...</div>
+              <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div v-else class="grid-layout">
         <button
           v-for="tpl in templates"
           :key="tpl.id"
@@ -33,8 +87,8 @@
           <div class="template-thumb" :class="{ empty: !tpl.cover }">
             <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
             <div v-else class="placeholder">更多模板...</div>
+            <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
           </div>
-          <div class="template-name">{{ tpl.name }}</div>
         </button>
       </div>
     </section>
@@ -69,6 +123,17 @@ const theme = computed(() => {
 });
 
 const templates = computed(() => theme.value?.templates || []);
+
+const layoutMode = computed(() => theme.value?.templatesLayout || "auto");
+const useFeatureLayout = computed(() => {
+  if (layoutMode.value === "feature") return true;
+  if (layoutMode.value === "grid") return false;
+  return templates.value.length <= 6;
+});
+
+const mainTemplate = computed(() => templates.value[0] || null);
+const sideTemplates = computed(() => templates.value.slice(1, 3));
+const bottomTemplates = computed(() => templates.value.slice(3, 6));
 
 function templateCover(tpl) {
   return resolveAsset(tpl?.cover || "");
@@ -145,26 +210,67 @@ onMounted(load);
 
 .template-panel {
   background: var(--panel-strong);
+  border: 2px solid rgba(74, 164, 255, 0.6);
+  padding: clamp(16px, 2.4vh, 26px);
+}
+
+.feature-layout {
+  display: grid;
+  grid-template-columns: 1.45fr 0.95fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "main side"
+    "bottom bottom";
+  gap: clamp(16px, 2.4vh, 26px);
+  max-height: min(66vh, 1200px);
+}
+
+.feature-card,
+.grid-card {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.feature-main {
+  grid-area: main;
+}
+
+.feature-side {
+  grid-area: side;
+  display: grid;
+  gap: clamp(16px, 2.4vh, 26px);
+}
+
+.feature-bottom {
+  grid-area: bottom;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vh, 26px);
 }
 
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: clamp(16px, 2.2vh, 22px);
-  max-height: min(64vh, 980px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vh, 26px);
+  max-height: min(64vh, 1180px);
   overflow-y: auto;
   padding-right: 8px;
 }
 
-.grid-card {
-  border: 2px solid rgba(90, 150, 220, 0.45);
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 18px;
-  display: grid;
-  gap: 10px;
-  cursor: pointer;
-  padding: clamp(12px, 1.8vh, 18px);
-  box-shadow: 0 14px 26px rgba(120, 150, 190, 0.2);
+.grid-layout::-webkit-scrollbar {
+  width: 8px;
+}
+
+.grid-layout::-webkit-scrollbar-track {
+  background: rgba(180, 190, 205, 0.35);
+  border-radius: 999px;
+}
+
+.grid-layout::-webkit-scrollbar-thumb {
+  background: rgba(150, 160, 175, 0.65);
+  border-radius: 999px;
 }
 
 .disabled {
@@ -173,13 +279,23 @@ onMounted(load);
 }
 
 .template-thumb {
+  position: relative;
   border-radius: 16px;
   overflow: hidden;
-  border: 2px solid rgba(90, 150, 220, 0.5);
+  border: 2px solid rgba(90, 150, 220, 0.4);
   background: #f0f6ff;
-  height: clamp(140px, 18vh, 220px);
+  aspect-ratio: 3 / 4;
   display: grid;
   place-items: center;
+  box-shadow: 0 14px 26px rgba(120, 150, 190, 0.22);
+}
+
+.template-thumb.large {
+  aspect-ratio: 3 / 4;
+}
+
+.template-thumb.small {
+  aspect-ratio: 3 / 4;
 }
 
 .template-thumb img {
@@ -195,14 +311,20 @@ onMounted(load);
 .placeholder {
   color: #6a7a90;
   font-weight: 700;
-  font-size: clamp(14px, 1.8vh, 18px);
+  font-size: clamp(14px, 1.8vh, 20px);
 }
 
-.template-name {
-  text-align: center;
-  font-size: clamp(16px, 2vh, 24px);
-  color: #4a5565;
+.template-label {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
   font-weight: 700;
+  font-size: clamp(14px, 1.7vh, 20px);
+  letter-spacing: 0.5px;
 }
 
 .back-btn {
@@ -220,15 +342,24 @@ onMounted(load);
   .grid-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .feature-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "side"
+      "bottom";
+  }
+  .feature-bottom {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .grid-layout {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    max-height: min(68vh, 1400px);
+    max-height: min(70vh, 1500px);
   }
-  .template-name {
-    font-size: clamp(20px, 2.3vh, 30px);
+  .template-label {
+    font-size: clamp(16px, 2vh, 24px);
   }
   .placeholder {
     font-size: clamp(16px, 2vh, 22px);

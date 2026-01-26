@@ -48,13 +48,14 @@
           <div v-else class="loading">二维码生成中...</div>
           <div class="qr-label">二维码</div>
         </div>
+        <div class="qr-cta">扫描二维码获取电子版照片</div>
         <div class="qr-actions">
-          <div class="qr-cta">扫描二维码获取电子版照片</div>
-          <button class="btn btn-ghost" @click="goHome">返回首页</button>
-        </div>
-        <div class="qr-countdown">
-          <div class="countdown-label">返回倒计时</div>
-          <div class="countdown-value">{{ idleSeconds }}s</div>
+          <button class="btn btn-secondary qr-btn" type="button" @click="goHome">
+            无操作{{ idleSeconds }}s后返回
+          </button>
+          <button class="btn btn-ghost qr-btn" type="button" @click="goHome">
+            返回首页
+          </button>
         </div>
       </div>
     </div>
@@ -257,10 +258,14 @@ onBeforeUnmount(() => {
 }
 
 .result-panel {
-  width: min(820px, 92vw);
-  min-height: clamp(360px, 56vh, 860px);
+  width: min(860px, 92vw);
+  min-height: clamp(420px, 60vh, 980px);
   display: grid;
   place-items: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 .result-wrap {
@@ -270,11 +275,11 @@ onBeforeUnmount(() => {
 }
 
 .result-image {
-  width: min(620px, 88vw);
-  max-height: 64vh;
+  width: min(660px, 88vw);
+  max-height: 66vh;
   object-fit: cover;
-  border-radius: 20px;
-  border: 2px solid rgba(80, 140, 210, 0.4);
+  border-radius: 22px;
+  border: 3px solid rgba(80, 140, 210, 0.5);
   box-shadow: 0 22px 44px rgba(120, 140, 170, 0.28);
 }
 
@@ -301,9 +306,10 @@ onBeforeUnmount(() => {
 
 .action-row {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
+  margin-top: clamp(12px, 2vh, 26px);
 }
 
 .error-msg {
@@ -316,18 +322,19 @@ onBeforeUnmount(() => {
 .qr-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.35);
   display: grid;
   place-items: center;
   z-index: 20;
+  backdrop-filter: blur(2px);
 }
 
 .qr-card {
-  width: min(440px, 86vw);
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  width: min(420px, 82vw);
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 18px;
+  padding: 20px 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
   border: 2px solid rgba(255, 255, 255, 0.7);
   display: grid;
   gap: 12px;
@@ -337,12 +344,12 @@ onBeforeUnmount(() => {
 
 .qr-robot {
   position: absolute;
-  top: -18px;
-  left: 18px;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: #5a8fff;
+  top: -16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #65a0ff, #4e7bff);
   color: #ffffff;
   font-weight: 800;
   display: grid;
@@ -357,7 +364,7 @@ onBeforeUnmount(() => {
 }
 
 .qr-frame {
-  width: min(280px, 60vw);
+  width: min(260px, 58vw);
   aspect-ratio: 1 / 1;
   background: #f1f1f1;
   border-radius: 16px;
@@ -389,17 +396,10 @@ onBeforeUnmount(() => {
   font-size: clamp(14px, 1.6vh, 18px);
 }
 
-.qr-actions {
-  display: grid;
-  gap: 10px;
-  width: 100%;
-  justify-items: center;
-}
-
 .qr-cta {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #cf2a32, #b81d27);
   color: #ffffff;
   font-weight: 700;
@@ -408,29 +408,23 @@ onBeforeUnmount(() => {
   font-size: clamp(16px, 2vh, 24px);
 }
 
-.qr-countdown {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  text-align: right;
-  color: #6b7482;
+.qr-actions {
+  display: grid;
+  gap: 10px;
+  width: 100%;
 }
 
-.countdown-label {
-  font-size: clamp(12px, 1.3vh, 16px);
-  letter-spacing: 0.5px;
+.qr-btn {
+  width: 100%;
+  font-size: clamp(15px, 1.8vh, 22px);
+  padding-block: clamp(10px, 1.4vh, 16px);
 }
 
-.countdown-value {
-  font-size: clamp(20px, 2.2vh, 28px);
-  font-weight: 800;
-  color: #c6252d;
-}
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .result-panel {
     width: min(980px, 92vw);
-    min-height: clamp(520px, 60vh, 1200px);
+    min-height: clamp(560px, 62vh, 1300px);
   }
   .result-image {
     width: min(760px, 90vw);
@@ -441,9 +435,6 @@ onBeforeUnmount(() => {
   }
   .qr-frame {
     width: min(320px, 60vw);
-  }
-  .countdown-value {
-    font-size: clamp(22px, 2.4vh, 32px);
   }
 }
 

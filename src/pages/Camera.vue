@@ -15,10 +15,13 @@
 
     <div class="check-row">
       <div v-for="item in checks" :key="item.label" class="check-item">
-        <div class="check-icon" :class="item.ok ? 'ok' : 'no'">
-          <span>{{ item.ok ? "✓" : "×" }}</span>
+        <div class="check-thumb">
+          <img :src="item.image" :alt="item.label" />
         </div>
         <div class="check-text">{{ item.label }}</div>
+        <div class="check-status" :class="item.ok ? 'ok' : 'no'">
+          <span>{{ item.ok ? "✓" : "×" }}</span>
+        </div>
       </div>
     </div>
 
@@ -73,6 +76,10 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import check1 from "../assets/steps/step-1.jpg";
+import check2 from "../assets/steps/step-2.jpg";
+import check3 from "../assets/steps/step-3.jpg";
+import check4 from "../assets/effects/effect-1.jpg";
 const router = useRouter();
 const route = useRoute();
 
@@ -93,10 +100,10 @@ const timer = ref(50);
 let timerId = null;
 
 const checks = [
-  { label: "五官清晰", ok: true },
-  { label: "正确镜头", ok: false },
-  { label: "面无遮挡", ok: false },
-  { label: "光线充足", ok: false },
+  { label: "五官清晰", ok: true, image: check1 },
+  { label: "正确镜头", ok: false, image: check2 },
+  { label: "面无遮挡", ok: false, image: check3 },
+  { label: "光线充足", ok: false, image: check4 },
 ];
 
 const styleId = computed(() => {
@@ -272,8 +279,8 @@ onBeforeUnmount(() => {
 .check-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 6px;
+  gap: 18px;
+  margin-top: 4px;
 }
 
 .check-item {
@@ -282,27 +289,49 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   font-size: clamp(14px, 1.7vh, 20px);
-  color: #5a6675;
+  color: #4b4f57;
 }
 
-.check-icon {
-  width: 60px;
-  height: 60px;
+.check-thumb {
+  width: clamp(84px, 10vh, 120px);
+  height: clamp(84px, 10vh, 120px);
   border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(198, 37, 45, 0.75);
+  background: #ffffff;
+  box-shadow: 0 12px 22px rgba(120, 140, 170, 0.18);
+}
+
+.check-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.check-text {
+  font-weight: 600;
+  color: #3f434b;
+}
+
+.check-status {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 800;
+  color: #ffffff;
+  background: #c6252d;
+  box-shadow: 0 8px 16px rgba(198, 37, 45, 0.3);
 }
 
-.check-icon.ok {
-  background: #d6f6e6;
-  color: #1b8b56;
+.check-status.ok {
+  background: #c6252d;
 }
 
-.check-icon.no {
-  background: #ffd4d4;
-  color: #c02d2d;
+.check-status.no {
+  background: #c6252d;
 }
 
 .stage {
@@ -373,12 +402,12 @@ onBeforeUnmount(() => {
 }
 
 .tip-badge {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: #c6252d;
   color: #ffffff;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .tip-text {
@@ -390,6 +419,10 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+}
+
+.action-row .btn {
+  min-height: clamp(54px, 6.4vh, 80px);
 }
 
 .hidden {
@@ -406,10 +439,9 @@ onBeforeUnmount(() => {
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
-  .check-icon {
-    width: 64px;
-    height: 64px;
-    font-size: 26px;
+  .check-thumb {
+    width: clamp(100px, 10vh, 140px);
+    height: clamp(100px, 10vh, 140px);
   }
   .stage {
     min-height: clamp(520px, 60vh, 1280px);

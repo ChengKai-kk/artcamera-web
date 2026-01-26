@@ -16,8 +16,8 @@
     <section class="panel mode-card">
       <div class="preview">
         <img v-if="previewUrl" :src="previewUrl" alt="preview" />
+        <div class="tag">{{ templateName || "精选模板" }}</div>
       </div>
-      <div class="tag">{{ templateName || "精选模板" }}</div>
     </section>
 
     <section class="countdown-panel">
@@ -130,15 +130,16 @@ onBeforeUnmount(() => {
 }
 
 .mode-card {
-  width: min(760px, 92vw);
+  width: min(820px, 92vw);
   display: grid;
   gap: 10px;
   justify-items: center;
   border-radius: 24px;
+  padding: clamp(18px, 2.4vh, 28px);
 }
 
 .preview {
-  width: min(600px, 82vw);
+  width: min(660px, 84vw);
   aspect-ratio: 3 / 4;
   border-radius: 20px;
   border: 2px solid rgba(80, 140, 210, 0.35);
@@ -146,6 +147,8 @@ onBeforeUnmount(() => {
   background: #f1f6ff;
   display: grid;
   place-items: center;
+  position: relative;
+  box-shadow: 0 16px 34px rgba(120, 150, 190, 0.22);
 }
 
 .preview img {
@@ -155,26 +158,30 @@ onBeforeUnmount(() => {
 }
 
 .tag {
-  margin-top: -6px;
-  padding: 8px 20px;
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 24px;
   border-radius: 999px;
   background: #c6252d;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(15px, 1.9vh, 22px);
+  font-size: clamp(16px, 2vh, 24px);
+  box-shadow: 0 12px 26px rgba(198, 37, 45, 0.3);
 }
 
 .countdown-panel {
-  width: min(660px, 90vw);
+  width: min(680px, 90vw);
   display: grid;
-  gap: 10px;
+  gap: 8px;
   text-align: center;
 }
 
 .countdown-title {
   font-weight: 700;
   color: #5a6675;
-  font-size: clamp(16px, 2vh, 24px);
+  font-size: clamp(16px, 2vh, 22px);
 }
 
 .countdown-options {
@@ -185,14 +192,14 @@ onBeforeUnmount(() => {
 }
 
 .countdown-chip {
-  min-width: 72px;
-  padding: 12px 20px;
+  min-width: 70px;
+  padding: 10px 20px;
   border-radius: 999px;
   border: 1px solid rgba(80, 140, 210, 0.35);
   background: rgba(255, 255, 255, 0.9);
   font-weight: 700;
   color: #4a5565;
-  font-size: clamp(15px, 1.8vh, 22px);
+  font-size: clamp(14px, 1.8vh, 20px);
   cursor: pointer;
 }
 
@@ -205,14 +212,15 @@ onBeforeUnmount(() => {
 .shoot-btn {
   width: min(240px, 60vw);
   font-size: clamp(18px, 2.2vh, 26px);
+  padding-block: clamp(14px, 1.8vh, 22px);
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .mode-card {
-    width: min(860px, 92vw);
+    width: min(900px, 92vw);
   }
   .preview {
-    width: min(680px, 86vw);
+    width: min(720px, 86vw);
   }
   .shoot-btn {
     width: min(280px, 60vw);
