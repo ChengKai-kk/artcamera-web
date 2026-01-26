@@ -23,27 +23,29 @@
         </div>
       </header>
 
-      <section class="theme-list">
-        <button
-          v-for="theme in themes"
-          :key="theme.id"
-          class="theme-card"
-          :class="`tone-${theme.tone}`"
-          type="button"
-          @click="selectTheme(theme)"
-        >
-          <div class="theme-number">{{ theme.number }}</div>
-          <div class="theme-text">
-            <div class="theme-name">{{ theme.name }}</div>
-            <div class="theme-en">{{ theme.en }}</div>
-          </div>
-          <div class="theme-avatar">
-            <img v-if="themeCover(theme)" :src="themeCover(theme)" :alt="theme.name" />
-          </div>
-        </button>
-      </section>
+      <section class="theme-block">
+        <div class="theme-list">
+          <button
+            v-for="theme in themes"
+            :key="theme.id"
+            class="theme-card"
+            :class="`tone-${theme.tone}`"
+            type="button"
+            @click="selectTheme(theme)"
+          >
+            <div class="theme-number">{{ theme.number }}</div>
+            <div class="theme-text">
+              <div class="theme-name">{{ theme.name }}</div>
+              <div class="theme-en">{{ theme.en }}</div>
+            </div>
+            <div class="theme-avatar">
+              <img v-if="themeCover(theme)" :src="themeCover(theme)" :alt="theme.name" />
+            </div>
+          </button>
+        </div>
 
-      <button class="btn btn-ghost back-btn" @click="goHome">返回</button>
+        <button class="btn btn-ghost back-btn" @click="goHome">返回</button>
+      </section>
     </div>
   </div>
 </template>
@@ -120,6 +122,11 @@ onMounted(load);
 <style scoped>
 .style-page {
   color: var(--text);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  min-height: 100vh;
+  height: 100vh;
 }
 
 .loading,
@@ -141,38 +148,52 @@ onMounted(load);
 
 .content {
   display: grid;
-  gap: clamp(18px, 2.6vh, 34px);
+  gap: clamp(20px, 2.6vh, 36px);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
 }
 
 .style-head {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  gap: clamp(18px, 3vh, 40px);
+  gap: clamp(24px, 3.4vh, 48px);
   align-items: start;
+  padding-top: clamp(36px, 5.6vh, 72px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+}
+
+.brand {
+  margin-left: 10%;
+  padding-top: 10%;
+  display: grid;
+  gap: clamp(16px, 2.2vh, 34px);
 }
 
 .brand-title {
   font-weight: 800;
-  font-size: clamp(32px, 4vh, 54px);
+  font-size: clamp(75px, 9.75vh, 120px);
   color: #c6252d;
 }
 
 .brand-subtitle {
-  margin-top: 8px;
-  font-size: clamp(16px, 2.2vh, 26px);
+  margin-top: 0;
+  font-size: clamp(52px, 6.6vh, 90px);
   color: #c6252d;
   font-weight: 600;
 }
 
 .demo-btn {
-  margin-top: 18px;
-  padding: 12px 26px;
-  border-radius: 12px;
+  margin-top: 0;
+  padding: 20px 52px;
+  border-radius: 20px;
   border: 2px solid rgba(198, 37, 45, 0.5);
   background: rgba(255, 255, 255, 0.96);
   color: #c6252d;
   font-weight: 700;
-  font-size: clamp(16px, 2vh, 22px);
+  font-size: clamp(40px, 5.2vh, 72px);
+  letter-spacing: 2px;
+  font-family: "Rajdhani", "DIN Alternate", "DIN Condensed", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   cursor: pointer;
   box-shadow: 0 12px 24px rgba(198, 37, 45, 0.12);
 }
@@ -184,68 +205,91 @@ onMounted(load);
 }
 
 .sample-card {
-  width: min(320px, 36vw);
-  border-radius: 18px;
+  width: min(540px, 44vw);
+  border-radius: 22px;
+  aspect-ratio: 3 / 4;
   border: 3px solid rgba(74, 164, 255, 0.7);
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 18px 30px rgba(120, 150, 190, 0.22);
   overflow: hidden;
-  justify-self: end;
+  justify-self: center;
 }
 
 .sample-card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+.theme-block {
+  display: grid;
+  gap: clamp(12px, 1.6vh, 22px);
+  align-content: start;
+  min-height: 0;
 }
 
 .theme-list {
   display: grid;
-  gap: clamp(18px, 2.6vh, 28px);
+  gap: clamp(14px, 2vh, 28px);
+  width: 100%;
+  align-content: start;
+  grid-auto-rows: max-content;
+  padding-block: clamp(4px, 0.6vh, 10px);
 }
 
 .theme-card {
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: clamp(16px, 2.6vh, 28px);
-  padding: clamp(18px, 2.8vh, 30px) clamp(140px, 22vh, 180px) clamp(18px, 2.8vh, 30px) clamp(28px, 3vh, 40px);
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: start;
+  gap: clamp(6px, 0.9vh, 14px);
+  padding: clamp(30px, 4.9vh, 68px) clamp(230px, 32vh, 300px) clamp(30px, 4.9vh, 68px) clamp(44px, 5.4vh, 78px);
+  padding-left: calc(5% + clamp(40px, 4.6vh, 66px));
   border-radius: 999px;
   border: none;
   cursor: pointer;
   box-shadow: 0 18px 36px rgba(120, 140, 170, 0.2);
   text-align: left;
+  min-height: clamp(170px, 16.2vh, 300px);
+  width: 90%;
+  justify-self: center;
 }
 
 .theme-number {
   font-weight: 800;
-  font-size: clamp(28px, 3.6vh, 46px);
+  font-size: clamp(64px, 8.2vh, 110px);
   color: rgba(255, 255, 255, 0.9);
+  text-align: left;
 }
 
 .theme-text {
   color: #ffffff;
+  display: grid;
+  gap: clamp(6px, 0.8vh, 12px);
 }
 
 .theme-name {
-  font-size: clamp(22px, 3vh, 34px);
+  font-size: clamp(34px, 4.4vh, 54px);
   font-weight: 800;
+  text-align: left;
 }
 
 .theme-en {
-  font-size: clamp(14px, 1.8vh, 22px);
+  font-size: clamp(20px, 2.9vh, 34px);
   letter-spacing: 1px;
   opacity: 0.9;
-  margin-top: 6px;
+  margin-top: 0;
+  text-align: left;
 }
 
 .theme-avatar {
   position: absolute;
   right: clamp(16px, 3vh, 28px);
-  bottom: -6px;
-  width: clamp(90px, 14vh, 140px);
-  height: clamp(90px, 14vh, 140px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(140px, 20vh, 210px);
+  height: clamp(140px, 20vh, 210px);
   border-radius: 50%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
@@ -273,7 +317,9 @@ onMounted(load);
 
 .back-btn {
   justify-self: center;
-  padding-inline: 50px;
+  padding-inline: 175px;
+  padding-block: clamp(28px, 3.6vh, 52px);
+  font-size: clamp(50px, 6.5vh, 80px);
 }
 
 @media (max-width: 720px) {
@@ -284,27 +330,68 @@ onMounted(load);
     justify-self: start;
   }
   .theme-card {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     padding-right: clamp(80px, 18vh, 120px);
   }
   .theme-avatar {
     width: clamp(70px, 10vh, 110px);
     height: clamp(70px, 10vh, 110px);
   }
+  .style-page {
+    height: auto;
+  }
+  .theme-block {
+    height: auto;
+  }
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .theme-card {
-    padding: clamp(22px, 3vh, 32px) clamp(160px, 24vh, 200px) clamp(22px, 3vh, 32px) clamp(32px, 3.4vh, 46px);
+    padding: clamp(36px, 5.6vh, 78px) clamp(260px, 34vh, 330px) clamp(36px, 5.6vh, 78px) clamp(48px, 6vh, 86px);
+    padding-left: calc(5% + clamp(44px, 5.2vh, 74px));
+    min-height: clamp(186px, 15.4vh, 300px);
   }
   .theme-name {
-    font-size: clamp(26px, 3.2vh, 38px);
+    font-size: clamp(42px, 5.3vh, 64px);
   }
   .theme-en {
-    font-size: clamp(16px, 2vh, 24px);
+    font-size: clamp(24px, 3.6vh, 40px);
   }
   .demo-btn {
-    font-size: clamp(18px, 2.2vh, 26px);
+    font-size: clamp(44px, 5.6vh, 78px);
+    padding: 22px 56px;
+  }
+  .sample-card {
+    width: min(620px, 44vw);
+  }
+  .theme-avatar {
+    width: clamp(170px, 20vh, 230px);
+    height: clamp(170px, 20vh, 230px);
+  }
+}
+
+@media (orientation: portrait) and (min-height: 3600px) {
+  .brand-title {
+    font-size: clamp(80px, 10.2vh, 130px);
+  }
+  .brand-subtitle {
+    font-size: clamp(56px, 7.2vh, 96px);
+  }
+  .demo-btn {
+    padding: 24px 60px;
+    font-size: clamp(46px, 5.8vh, 82px);
+  }
+  .sample-card {
+    width: min(680px, 42vw);
+  }
+  .theme-number {
+    font-size: clamp(64px, 8.2vh, 110px);
+  }
+  .theme-name {
+    font-size: clamp(32px, 4.2vh, 52px);
+  }
+  .theme-en {
+    font-size: clamp(20px, 2.6vh, 30px);
   }
 }
 </style>

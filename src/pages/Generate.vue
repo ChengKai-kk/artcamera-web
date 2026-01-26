@@ -162,8 +162,8 @@ function pollTask() {
 
 async function makeQr(url) {
   qrDataUrl.value = await QRCode.toDataURL(url, {
-    width: 320,
-    margin: 1,
+    width: 800,
+    margin: 2,
   });
 }
 
@@ -254,31 +254,63 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .generate-page {
-  align-items: center;
+  align-items: stretch;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  padding: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: clamp(22px, 3.4vh, 44px);
+  justify-items: stretch;
+}
+
+.generate-page .page-top {
+  width: 100%;
+  max-width: 100%;
+  padding-top: clamp(52px, 7.8vh, 110px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+}
+
+.generate-page .page-title-cn {
+  font-size: clamp(68px, 8.4vh, 120px);
+}
+
+.generate-page .page-title-en {
+  font-size: clamp(28px, 3.4vh, 44px);
+  letter-spacing: 2px;
+}
+
+.generate-page .page-timer {
+  font-size: clamp(40px, 5.2vh, 72px);
 }
 
 .result-panel {
-  width: min(860px, 92vw);
-  min-height: clamp(420px, 60vh, 980px);
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-height: 0;
   display: grid;
   place-items: center;
   background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0;
+  padding: 0 clamp(24px, 3.2vh, 48px);
 }
 
 .result-wrap {
   width: 100%;
+  height: 100%;
   display: grid;
   place-items: center;
 }
 
 .result-image {
-  width: min(660px, 88vw);
-  max-height: 66vh;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
   object-fit: cover;
-  border-radius: 22px;
+  border-radius: 28px;
   border: 3px solid rgba(80, 140, 210, 0.5);
   box-shadow: 0 22px 44px rgba(120, 140, 170, 0.28);
 }
@@ -286,13 +318,15 @@ onBeforeUnmount(() => {
 .result-placeholder {
   display: grid;
   place-items: center;
-  gap: 14px;
+  width: 100%;
+  height: 100%;
+  gap: clamp(16px, 2.4vh, 32px);
   text-align: center;
 }
 
 .orb {
-  width: clamp(110px, 18vh, 190px);
-  height: clamp(110px, 18vh, 190px);
+  width: clamp(440px, 52vh, 840px);
+  height: clamp(440px, 52vh, 840px);
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, rgba(255, 190, 190, 0.95), rgba(116, 182, 255, 0.6));
   box-shadow: 0 0 36px rgba(198, 37, 45, 0.2);
@@ -301,22 +335,29 @@ onBeforeUnmount(() => {
 
 .hint {
   color: #5a6675;
-  font-size: clamp(16px, 1.8vh, 22px);
+  font-weight: 700;
+  font-size: clamp(42px, 5.4vh, 84px);
 }
 
 .action-row {
   display: flex;
-  gap: 14px;
+  gap: clamp(16px, 2.4vh, 28px);
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: clamp(12px, 2vh, 26px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+}
+
+.action-row .btn {
+  min-height: clamp(90px, 10vh, 140px);
+  font-size: clamp(50px, 6.5vh, 80px);
 }
 
 .error-msg {
-  margin-top: 8px;
+  margin-top: 4px;
+  padding-inline: clamp(24px, 3.2vh, 48px);
   color: #c6252d;
   text-align: center;
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(32px, 4.2vh, 56px);
 }
 
 .qr-overlay {
@@ -330,44 +371,45 @@ onBeforeUnmount(() => {
 }
 
 .qr-card {
-  width: min(420px, 82vw);
+  width: min(1050px, 90vw);
   background: rgba(255, 255, 255, 0.96);
-  border-radius: 18px;
-  padding: 20px 18px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  border-radius: 28px;
+  padding: clamp(36px, 4.6vh, 64px) clamp(32px, 4.2vh, 58px);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.22);
   border: 2px solid rgba(255, 255, 255, 0.7);
   display: grid;
-  gap: 12px;
+  gap: clamp(16px, 2.6vh, 36px);
   justify-items: center;
   position: relative;
 }
 
 .qr-robot {
   position: absolute;
-  top: -16px;
-  left: 16px;
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  top: clamp(-18px, -2vh, -10px);
+  left: clamp(18px, 2.4vh, 32px);
+  width: clamp(70px, 8.6vh, 120px);
+  height: clamp(70px, 8.6vh, 120px);
+  border-radius: clamp(20px, 2.6vh, 36px);
   background: linear-gradient(135deg, #65a0ff, #4e7bff);
   color: #ffffff;
   font-weight: 800;
   display: grid;
   place-items: center;
   box-shadow: 0 8px 20px rgba(90, 143, 255, 0.35);
+  font-size: clamp(28px, 3.6vh, 48px);
 }
 
 .qr-title {
   font-weight: 700;
   color: #2d2f33;
-  font-size: clamp(18px, 2.2vh, 26px);
+  font-size: clamp(48px, 6vh, 82px);
 }
 
 .qr-frame {
-  width: min(260px, 58vw);
+  width: min(680px, 70vw);
   aspect-ratio: 1 / 1;
   background: #f1f1f1;
-  border-radius: 16px;
+  border-radius: 24px;
   border: 2px solid rgba(180, 180, 180, 0.7);
   display: grid;
   place-items: center;
@@ -379,62 +421,60 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 10px;
+  padding: clamp(16px, 2.4vh, 32px);
 }
 
 .qr-label {
   position: absolute;
-  bottom: 10px;
+  bottom: clamp(14px, 2vh, 24px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(32px, 4vh, 56px);
   color: #5a6675;
 }
 
 .loading {
   color: #5a6675;
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(32px, 4vh, 56px);
 }
 
 .qr-cta {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: clamp(18px, 2.8vh, 36px) clamp(20px, 3.2vh, 48px);
+  border-radius: 16px;
   background: linear-gradient(135deg, #cf2a32, #b81d27);
   color: #ffffff;
   font-weight: 700;
   text-align: center;
   box-shadow: 0 12px 26px rgba(207, 42, 50, 0.32);
-  font-size: clamp(16px, 2vh, 24px);
+  font-size: clamp(42px, 5.4vh, 76px);
 }
 
 .qr-actions {
   display: grid;
-  gap: 10px;
+  gap: clamp(14px, 2.2vh, 30px);
   width: 100%;
 }
 
 .qr-btn {
   width: 100%;
-  font-size: clamp(15px, 1.8vh, 22px);
-  padding-block: clamp(10px, 1.4vh, 16px);
+  font-size: clamp(50px, 6.5vh, 80px);
+  padding-block: clamp(20px, 3.2vh, 40px);
 }
 
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .result-panel {
-    width: min(980px, 92vw);
-    min-height: clamp(560px, 62vh, 1300px);
+    padding-inline: clamp(28px, 3.6vh, 60px);
   }
   .result-image {
-    width: min(760px, 90vw);
-    max-height: 70vh;
+    border-radius: 32px;
   }
   .qr-card {
-    width: min(520px, 86vw);
+    width: min(1200px, 90vw);
   }
   .qr-frame {
-    width: min(320px, 60vw);
+    width: min(760px, 72vw);
   }
 }
 

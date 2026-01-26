@@ -191,6 +191,20 @@ onMounted(load);
   color: var(--text);
 }
 
+.template-page .page-top {
+  padding-top: clamp(36px, 5.6vh, 72px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+}
+
+.template-page .page-title-cn {
+  font-size: clamp(75px, 9.75vh, 120px);
+}
+
+.template-page .page-title-en {
+  font-size: clamp(28px, 3.4vh, 42px);
+  letter-spacing: 2px;
+}
+
 .loading,
 .error {
   text-align: center;
@@ -211,7 +225,9 @@ onMounted(load);
 .template-panel {
   background: var(--panel-strong);
   border: 2px solid rgba(74, 164, 255, 0.6);
-  padding: clamp(16px, 2.4vh, 26px);
+  padding: clamp(20px, 3vh, 36px);
+  display: grid;
+  align-content: center;
 }
 
 .feature-layout {
@@ -222,7 +238,9 @@ onMounted(load);
     "main side"
     "bottom bottom";
   gap: clamp(16px, 2.4vh, 26px);
-  max-height: min(66vh, 1200px);
+  max-height: none;
+  min-height: clamp(520px, 58vh, 1280px);
+  align-content: center;
 }
 
 .feature-card,
@@ -252,11 +270,13 @@ onMounted(load);
 
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2.4vh, 26px);
-  max-height: min(64vh, 1180px);
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
+  gap: clamp(18px, 2.6vh, 30px);
+  max-height: none;
+  min-height: clamp(520px, 58vh, 1280px);
   overflow-y: auto;
   padding-right: 8px;
+  align-content: center;
 }
 
 .grid-layout::-webkit-scrollbar {
@@ -311,7 +331,7 @@ onMounted(load);
 .placeholder {
   color: #6a7a90;
   font-weight: 700;
-  font-size: clamp(14px, 1.8vh, 20px);
+  font-size: clamp(28px, 3.6vh, 40px);
 }
 
 .template-label {
@@ -323,13 +343,15 @@ onMounted(load);
   background: rgba(0, 0, 0, 0.45);
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(14px, 1.7vh, 20px);
+  font-size: clamp(40px, 5.2vh, 60px);
   letter-spacing: 0.5px;
 }
 
 .back-btn {
   justify-self: center;
-  padding-inline: 50px;
+  padding-inline: 175px;
+  padding-block: clamp(28px, 3.6vh, 52px);
+  font-size: clamp(50px, 6.5vh, 80px);
 }
 
 @media (max-width: 900px) {
@@ -356,13 +378,13 @@ onMounted(load);
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .grid-layout {
-    max-height: min(70vh, 1500px);
+    min-height: clamp(680px, 62vh, 1500px);
   }
   .template-label {
-    font-size: clamp(16px, 2vh, 24px);
+    font-size: clamp(48px, 6vh, 72px);
   }
   .placeholder {
-    font-size: clamp(16px, 2vh, 22px);
+    font-size: clamp(36px, 4.8vh, 56px);
   }
 }
 </style>

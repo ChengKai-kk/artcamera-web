@@ -30,7 +30,7 @@
           :class="{ active: delaySec === sec }"
           @click="delaySec = sec"
         >
-          {{ sec === 0 ? "无" : sec + "s" }}
+          {{ sec }}s
         </button>
       </div>
     </section>
@@ -50,7 +50,7 @@ const route = useRoute();
 
 const baseUrl = import.meta.env.BASE_URL;
 
-const delayOptions = [0, 3, 5, 10];
+const delayOptions = [3, 5, 10];
 const delaySec = ref(3);
 
 const totalSeconds = 60;
@@ -114,6 +114,9 @@ onMounted(() => {
   if (!Number.isNaN(storedDelay)) {
     delaySec.value = storedDelay;
   }
+  if (!delayOptions.includes(delaySec.value)) {
+    delaySec.value = delayOptions[0];
+  }
 
   startTimer();
 });
@@ -127,28 +130,64 @@ onBeforeUnmount(() => {
 .mode-page {
   color: var(--text);
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: stretch;
+  gap: clamp(22px, 3.4vh, 44px);
+  padding: 0;
+  width: 100vw;
+  max-width: 100vw;
+  padding-bottom: clamp(36px, 5.2vh, 78px);
+}
+
+.mode-page .page-top {
+  width: 100%;
+  max-width: 100%;
+  padding-top: clamp(52px, 7.8vh, 110px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+}
+
+.mode-page .page-title-cn {
+  font-size: clamp(68px, 8.4vh, 120px);
+}
+
+.mode-page .page-title-en {
+  font-size: clamp(28px, 3.4vh, 44px);
+  letter-spacing: 2px;
 }
 
 .mode-card {
-  width: min(820px, 92vw);
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
   display: grid;
-  gap: 10px;
-  justify-items: center;
-  border-radius: 24px;
-  padding: clamp(18px, 2.4vh, 28px);
+  align-content: stretch;
+  justify-items: stretch;
+  padding: 0 clamp(24px, 3.2vh, 48px);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  grid-template-rows: 1fr;
 }
 
 .preview {
-  width: min(660px, 84vw);
-  aspect-ratio: 3 / 4;
-  border-radius: 20px;
-  border: 2px solid rgba(80, 140, 210, 0.35);
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: none;
+  border-radius: 24px;
+  border: 3px solid rgba(80, 140, 210, 0.45);
   overflow: hidden;
   background: #f1f6ff;
   display: grid;
   place-items: center;
   position: relative;
-  box-shadow: 0 16px 34px rgba(120, 150, 190, 0.22);
+  box-shadow: 0 18px 36px rgba(120, 150, 190, 0.24);
 }
 
 .preview img {
@@ -159,47 +198,49 @@ onBeforeUnmount(() => {
 
 .tag {
   position: absolute;
-  bottom: 18px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 8px 24px;
+  padding: 14px 40px;
   border-radius: 999px;
   background: #c6252d;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(16px, 2vh, 24px);
+  font-size: clamp(56px, 7.2vh, 88px);
   box-shadow: 0 12px 26px rgba(198, 37, 45, 0.3);
 }
 
 .countdown-panel {
-  width: min(680px, 90vw);
+  width: 100%;
+  max-width: 100%;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   text-align: center;
+  padding-inline: clamp(24px, 3.2vh, 48px);
 }
 
 .countdown-title {
   font-weight: 700;
   color: #5a6675;
-  font-size: clamp(16px, 2vh, 22px);
+  font-size: clamp(34px, 4.6vh, 56px);
 }
 
 .countdown-options {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
 .countdown-chip {
-  min-width: 70px;
-  padding: 10px 20px;
+  min-width: 240px;
+  padding: 24px 44px;
   border-radius: 999px;
   border: 1px solid rgba(80, 140, 210, 0.35);
   background: rgba(255, 255, 255, 0.9);
   font-weight: 700;
   color: #4a5565;
-  font-size: clamp(14px, 1.8vh, 20px);
+  font-size: clamp(44px, 5.6vh, 72px);
   cursor: pointer;
 }
 
@@ -210,23 +251,25 @@ onBeforeUnmount(() => {
 }
 
 .shoot-btn {
-  width: min(240px, 60vw);
-  font-size: clamp(18px, 2.2vh, 26px);
-  padding-block: clamp(14px, 1.8vh, 22px);
+  width: min(520px, 80vw);
+  font-size: clamp(56px, 7.2vh, 88px);
+  padding-block: clamp(26px, 3.4vh, 44px);
+  justify-self: center;
 }
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .mode-card {
-    width: min(900px, 92vw);
+    width: 100%;
+    max-width: 100%;
   }
   .preview {
-    width: min(720px, 86vw);
+    height: 100%;
   }
   .shoot-btn {
-    width: min(280px, 60vw);
+    width: min(600px, 80vw);
   }
   .countdown-chip {
-    min-width: 92px;
+    min-width: 280px;
   }
 }
 </style>
