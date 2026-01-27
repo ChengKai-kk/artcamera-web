@@ -110,6 +110,7 @@ const data = ref(null);
 const themeId = ref("");
 
 const baseUrl = import.meta.env.BASE_URL;
+const reusePhoto = computed(() => route.query.reuse === "1");
 
 function resolveAsset(path) {
   if (!path) return "";
@@ -172,6 +173,14 @@ function selectTemplate(tpl) {
   sessionStorage.setItem("templateId", tpl.id);
   sessionStorage.setItem("templateName", tpl.name);
   sessionStorage.setItem("templateCover", tpl.cover || "");
+  const imageBase64 = sessionStorage.getItem("imageBase64");
+  if (reusePhoto.value && imageBase64) {
+    const styleId = `${themeId.value}_${tpl.id}`;
+    sessionStorage.setItem("styleId", styleId);
+    sessionStorage.setItem("artcam_styleId", styleId);
+    router.push({ path: "/generate" });
+    return;
+  }
   router.push({ path: "/mode", query: { themeId: themeId.value, templateId: tpl.id } });
 }
 

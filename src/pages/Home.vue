@@ -38,12 +38,13 @@
 <script setup>
 import { useRouter } from "vue-router";
 
-import heroImage from "../assets/effects/effect-2.jpg";
 import step1 from "../assets/steps/step-1.jpg";
 import step2 from "../assets/steps/step-2.jpg";
 import step3 from "../assets/steps/step-3.jpg";
 
 const router = useRouter();
+const baseUrl = import.meta.env.BASE_URL;
+const heroImage = `${baseUrl}首页图.jpg`;
 
 const steps = [
   { number: "01", title: "风格选择", image: step1 },

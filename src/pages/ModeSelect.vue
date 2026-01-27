@@ -35,9 +35,12 @@
       </div>
     </section>
 
-    <button class="btn btn-primary shoot-btn" @click="startShooting">
-      现场拍摄
-    </button>
+    <div class="action-row">
+      <button class="btn btn-ghost back-btn" @click="goBack">返回</button>
+      <button class="btn btn-primary shoot-btn" @click="startShooting">
+        现场拍摄
+      </button>
+    </div>
   </div>
 </template>
 
@@ -99,6 +102,10 @@ function goHome() {
   router.push("/");
 }
 
+function goBack() {
+  router.push({ path: "/templates", query: { themeId: themeId.value } });
+}
+
 onMounted(() => {
   themeId.value =
     route.query.themeId?.toString() || sessionStorage.getItem("themeId") || "";
@@ -135,13 +142,14 @@ onBeforeUnmount(() => {
   margin: 0;
   height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   justify-items: stretch;
-  gap: clamp(22px, 3.4vh, 44px);
+  gap: clamp(10px, 1.4vh, 18px);
   padding: 0;
   width: 100vw;
   max-width: 100vw;
   padding-bottom: clamp(36px, 5.2vh, 78px);
+  overflow: hidden;
 }
 
 .mode-page .page-top {
@@ -164,6 +172,7 @@ onBeforeUnmount(() => {
   width: 100%;
   max-width: 100%;
   height: 100%;
+  min-height: 0;
   display: grid;
   align-content: stretch;
   justify-items: stretch;
@@ -173,6 +182,7 @@ onBeforeUnmount(() => {
   box-shadow: none;
   backdrop-filter: none;
   grid-template-rows: 1fr;
+  align-self: stretch;
 }
 
 .preview {
@@ -250,10 +260,24 @@ onBeforeUnmount(() => {
   border-color: #c6252d;
 }
 
-.shoot-btn {
-  width: min(520px, 80vw);
+.action-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(18px, 2.6vh, 36px);
+  padding-inline: clamp(24px, 3.2vh, 48px);
+  flex-wrap: wrap;
+}
+
+.action-row .btn {
+  width: min(520px, 40vw);
   font-size: clamp(56px, 7.2vh, 88px);
   padding-block: clamp(26px, 3.4vh, 44px);
+  min-height: clamp(90px, 10vh, 140px);
+}
+
+.shoot-btn {
   justify-self: center;
 }
 
@@ -261,12 +285,13 @@ onBeforeUnmount(() => {
   .mode-card {
     width: 100%;
     max-width: 100%;
+    height: 100%;
   }
   .preview {
     height: 100%;
   }
-  .shoot-btn {
-    width: min(600px, 80vw);
+  .action-row .btn {
+    width: min(600px, 40vw);
   }
   .countdown-chip {
     min-width: 280px;

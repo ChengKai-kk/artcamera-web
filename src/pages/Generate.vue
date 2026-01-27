@@ -29,6 +29,9 @@
       <button v-if="status === 'success'" class="btn btn-primary" @click="openQr">
         查看二维码
       </button>
+      <button v-if="status === 'success'" class="btn btn-secondary" @click="goTemplates">
+        重新选择模板
+      </button>
       <button v-if="status === 'success'" class="btn btn-ghost" @click="goHome">
         返回主页
       </button>
@@ -209,6 +212,13 @@ function goHome() {
   if (unbindIdle) unbindIdle();
   unbindIdle = null;
   router.push("/");
+}
+
+function goTemplates() {
+  if (unbindIdle) unbindIdle();
+  unbindIdle = null;
+  const themeId = sessionStorage.getItem("themeId") || "";
+  router.push({ path: "/templates", query: { themeId, reuse: "1" } });
 }
 
 function reset() {

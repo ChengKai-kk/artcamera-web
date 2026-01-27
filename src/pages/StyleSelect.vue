@@ -218,7 +218,7 @@ onMounted(load);
 .sample-card img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .theme-block {
@@ -244,21 +244,21 @@ onMounted(load);
   align-items: start;
   justify-items: start;
   gap: clamp(6px, 0.9vh, 14px);
-  padding: clamp(30px, 4.9vh, 68px) clamp(230px, 32vh, 300px) clamp(30px, 4.9vh, 68px) clamp(44px, 5.4vh, 78px);
+  padding: clamp(24px, 3.92vh, 54px) clamp(230px, 32vh, 300px) clamp(24px, 3.92vh, 54px) clamp(44px, 5.4vh, 78px);
   padding-left: calc(5% + clamp(40px, 4.6vh, 66px));
   border-radius: 999px;
   border: none;
   cursor: pointer;
   box-shadow: 0 18px 36px rgba(120, 140, 170, 0.2);
   text-align: left;
-  min-height: clamp(170px, 16.2vh, 300px);
+  min-height: clamp(136px, 13vh, 240px);
   width: 90%;
   justify-self: center;
 }
 
 .theme-number {
   font-weight: 800;
-  font-size: clamp(64px, 8.2vh, 110px);
+  font-size: clamp(96px, 12.3vh, 165px);
   color: rgba(255, 255, 255, 0.9);
   text-align: left;
 }
@@ -270,13 +270,13 @@ onMounted(load);
 }
 
 .theme-name {
-  font-size: clamp(34px, 4.4vh, 54px);
+  font-size: clamp(66px, 8.6vh, 105px);
   font-weight: 800;
   text-align: left;
 }
 
 .theme-en {
-  font-size: clamp(20px, 2.9vh, 34px);
+  font-size: clamp(39px, 5.7vh, 66px);
   letter-spacing: 1px;
   opacity: 0.9;
   margin-top: 0;
@@ -288,8 +288,8 @@ onMounted(load);
   right: clamp(16px, 3vh, 28px);
   top: 50%;
   transform: translateY(-50%);
-  width: clamp(140px, 20vh, 210px);
-  height: clamp(140px, 20vh, 210px);
+  width: clamp(280px, 40vh, 420px);
+  height: clamp(280px, 40vh, 420px);
   border-radius: 50%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
@@ -347,15 +347,15 @@ onMounted(load);
 
 @media (orientation: portrait) and (min-height: 2400px) {
   .theme-card {
-    padding: clamp(36px, 5.6vh, 78px) clamp(260px, 34vh, 330px) clamp(36px, 5.6vh, 78px) clamp(48px, 6vh, 86px);
+    padding: clamp(28px, 4.48vh, 62px) clamp(260px, 34vh, 330px) clamp(28px, 4.48vh, 62px) clamp(48px, 6vh, 86px);
     padding-left: calc(5% + clamp(44px, 5.2vh, 74px));
-    min-height: clamp(186px, 15.4vh, 300px);
+    min-height: clamp(149px, 12.3vh, 240px);
   }
   .theme-name {
-    font-size: clamp(42px, 5.3vh, 64px);
+    font-size: clamp(82px, 10.3vh, 125px);
   }
   .theme-en {
-    font-size: clamp(24px, 3.6vh, 40px);
+    font-size: clamp(47px, 7vh, 78px);
   }
   .demo-btn {
     font-size: clamp(44px, 5.6vh, 78px);
@@ -365,8 +365,8 @@ onMounted(load);
     width: min(620px, 44vw);
   }
   .theme-avatar {
-    width: clamp(170px, 20vh, 230px);
-    height: clamp(170px, 20vh, 230px);
+    width: clamp(340px, 40vh, 460px);
+    height: clamp(340px, 40vh, 460px);
   }
 }
 
@@ -385,13 +385,13 @@ onMounted(load);
     width: min(680px, 42vw);
   }
   .theme-number {
-    font-size: clamp(64px, 8.2vh, 110px);
+    font-size: clamp(96px, 12.3vh, 165px);
   }
   .theme-name {
-    font-size: clamp(32px, 4.2vh, 52px);
+    font-size: clamp(62px, 8.2vh, 102px);
   }
   .theme-en {
-    font-size: clamp(20px, 2.6vh, 30px);
+    font-size: clamp(39px, 5.1vh, 59px);
   }
 }
 </style>

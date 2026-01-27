@@ -10,9 +10,9 @@ html, body, #app { height: 100%; margin: 0; }
   --radius-sm: 14px;
   --touch-size: 58px;
 
-  --bg-0: #e6f2ff;
-  --bg-1: #ffe7d8;
-  --bg-2: #ebe8ff;
+  --bg-0: rgb(251, 219, 209);
+  --bg-1: rgb(253, 232, 226);
+  --bg-2: rgb(246, 211, 201);
   --panel: rgba(255, 255, 255, 0.9);
   --panel-strong: rgba(255, 255, 255, 0.96);
   --border: rgba(92, 156, 226, 0.32);
@@ -32,7 +32,7 @@ html, body, #app { height: 100%; margin: 0; }
 }
 
 body {
-  background: linear-gradient(180deg, #f7fbff 0%, #ffffff 65%);
+  background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
   color: var(--text);
   font-family: "Source Han Sans SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
   letter-spacing: 0.2px;
@@ -58,9 +58,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(520px 520px at 12% 16%, rgba(150, 202, 255, 0.45), transparent 70%),
-    radial-gradient(680px 680px at 90% 12%, rgba(255, 208, 180, 0.45), transparent 70%),
-    radial-gradient(640px 640px at 80% 82%, rgba(210, 200, 255, 0.42), transparent 70%);
+    radial-gradient(520px 520px at 12% 16%, rgba(255, 203, 189, 0.45), transparent 70%),
+    radial-gradient(680px 680px at 90% 12%, rgba(255, 224, 212, 0.45), transparent 70%),
+    radial-gradient(640px 640px at 80% 82%, rgba(248, 200, 190, 0.42), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
