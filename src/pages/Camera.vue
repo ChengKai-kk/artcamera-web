@@ -76,10 +76,10 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import check1 from "../assets/steps/step-1.jpg";
-import check2 from "../assets/steps/step-2.jpg";
-import check3 from "../assets/steps/step-3.jpg";
-import check4 from "../assets/effects/effect-1.jpg";
+import check1 from "../assets/steps/step-1.webp";
+import check2 from "../assets/steps/step-2.webp";
+import check3 from "../assets/steps/step-3.webp";
+import check4 from "../assets/effects/effect-1.webp";
 const router = useRouter();
 const route = useRoute();
 

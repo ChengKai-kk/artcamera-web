@@ -2,7 +2,7 @@
   "title": "金山文博园",
   "subtitle": "让我们一起加入金山文博园AI世界",
   "cta": "样片模板展示",
-  "sample": "templates/west_flower_girl.webp",
+  "sample": "templates/west_flower_girl.jpg",
   "themes": [
     {
       "id": "west",
@@ -10,38 +10,38 @@
       "name": "趣味西游主题",
       "en": "FUN JOURNEY TO THE WEST",
       "tone": "blue",
-      "cover": "styles/west.webp",
+      "cover": "styles/west.jpg",
       "templatesLayout": "grid",
       "templates": [
         {
           "id": "flower_girl",
           "name": "国风奇幻",
-          "cover": "templates/west_flower_girl.webp"
+          "cover": "templates/west_flower_girl.jpg"
         },
         {
           "id": "celestial_general",
           "name": "天宫神将",
-          "cover": "templates/west_celestial_general.webp"
+          "cover": "templates/west_celestial_general.jpg"
         },
         {
           "id": "temple_monk",
           "name": "禅院清修",
-          "cover": "templates/west_temple_monk.webp"
+          "cover": "templates/west_temple_monk.jpg"
         },
         {
           "id": "mountain_myth",
           "name": "仙山云海",
-          "cover": "templates/west_mountain_myth.webp"
+          "cover": "templates/west_mountain_myth.jpg"
         },
         {
           "id": "lantern_festival",
           "name": "灯会夜色",
-          "cover": "templates/west_lantern_festival.webp"
+          "cover": "templates/west_lantern_festival.jpg"
         },
         {
           "id": "west_journey",
           "name": "西游行旅",
-          "cover": "templates/west_west_journey.webp"
+          "cover": "templates/west_west_journey.jpg"
         }
       ]
     },
@@ -51,38 +51,38 @@
       "name": "写实风主题",
       "en": "REALISTIC STYLE THEME",
       "tone": "peach",
-      "cover": "styles/real.webp",
+      "cover": "styles/real.jpg",
       "templatesLayout": "grid",
       "templates": [
         {
           "id": "studio_clean",
           "name": "影棚写实",
-          "cover": "templates/real_studio_clean.webp"
+          "cover": "templates/real_studio_clean.jpg"
         },
         {
           "id": "window_daylight",
           "name": "窗边日光",
-          "cover": "templates/real_window_daylight.webp"
+          "cover": "templates/real_window_daylight.jpg"
         },
         {
           "id": "outdoor_childhood",
           "name": "户外童真",
-          "cover": "templates/real_outdoor_childhood.webp"
+          "cover": "templates/real_outdoor_childhood.jpg"
         },
         {
           "id": "city_cinematic",
           "name": "城市电影感",
-          "cover": "templates/real_city_cinematic.webp"
+          "cover": "templates/real_city_cinematic.jpg"
         },
         {
           "id": "vintage_film",
           "name": "复古胶片",
-          "cover": "templates/real_vintage_film.webp"
+          "cover": "templates/real_vintage_film.jpg"
         },
         {
           "id": "clean_profile",
           "name": "清爽写真",
-          "cover": "templates/real_clean_profile.webp"
+          "cover": "templates/real_clean_profile.jpg"
         }
       ]
     },
@@ -92,38 +92,38 @@
       "name": "打破次元壁",
       "en": "BREAK THE DIMENSIONAL WALL",
       "tone": "lavender",
-      "cover": "styles/dimension.webp",
+      "cover": "styles/dimension.jpg",
       "templatesLayout": "grid",
       "templates": [
         {
           "id": "storybook",
           "name": "童话绘本",
-          "cover": "templates/dimension_storybook.webp"
+          "cover": "templates/dimension_storybook.jpg"
         },
         {
           "id": "toy_world",
           "name": "玩具微缩",
-          "cover": "templates/dimension_toy_world.webp"
+          "cover": "templates/dimension_toy_world.jpg"
         },
         {
           "id": "soft_anime",
           "name": "轻动漫",
-          "cover": "templates/dimension_soft_anime.webp"
+          "cover": "templates/dimension_soft_anime.jpg"
         },
         {
           "id": "future_city",
           "name": "未来城市",
-          "cover": "templates/dimension_future_city.webp"
+          "cover": "templates/dimension_future_city.jpg"
         },
         {
           "id": "sketch",
           "name": "手绘素描",
-          "cover": "templates/dimension_sketch.webp"
+          "cover": "templates/dimension_sketch.jpg"
         },
         {
           "id": "neon_dream",
           "name": "霓虹梦境",
-          "cover": "templates/dimension_neon_dream.webp"
+          "cover": "templates/dimension_neon_dream.jpg"
         }
       ]
     }
