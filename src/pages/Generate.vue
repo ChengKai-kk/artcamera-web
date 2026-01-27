@@ -86,11 +86,11 @@ const qrDataUrl = ref("");
 const imageBase64 = sessionStorage.getItem("imageBase64");
 const styleId = sessionStorage.getItem("styleId") || "default";
 
-const totalSeconds = 120;
+const totalSeconds = 180;
 const timer = ref(totalSeconds);
 let timerId = null;
 
-const IDLE_MS = 60 * 1000;
+const IDLE_MS = 90 * 1000;
 const idleSeconds = ref(Math.floor(IDLE_MS / 1000));
 let idleTimer = null;
 let countdownTimer = null;
