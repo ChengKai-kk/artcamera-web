@@ -55,34 +55,49 @@
       "templatesLayout": "grid",
       "templates": [
         {
-          "id": "studio_clean",
-          "name": "影棚写实",
-          "cover": "templates/real_studio_clean.webp"
+          "id": "police_officer",
+          "name": "警察",
+          "cover": "templates/real_police_officer.webp"
         },
         {
-          "id": "window_daylight",
-          "name": "窗边日光",
-          "cover": "templates/real_window_daylight.webp"
+          "id": "doctor",
+          "name": "医生",
+          "cover": "templates/real_doctor.webp"
         },
         {
-          "id": "outdoor_childhood",
-          "name": "户外童真",
-          "cover": "templates/real_outdoor_childhood.webp"
+          "id": "firefighter",
+          "name": "消防员",
+          "cover": "templates/real_firefighter.webp"
         },
         {
-          "id": "city_cinematic",
-          "name": "城市电影感",
-          "cover": "templates/real_city_cinematic.webp"
+          "id": "teacher",
+          "name": "老师",
+          "cover": "templates/real_teacher.webp"
         },
         {
-          "id": "vintage_film",
-          "name": "复古胶片",
-          "cover": "templates/real_vintage_film.webp"
+          "id": "pilot",
+          "name": "飞行员",
+          "cover": "templates/real_pilot.webp"
         },
         {
-          "id": "clean_profile",
-          "name": "清爽写真",
-          "cover": "templates/real_clean_profile.webp"
+          "id": "scientist",
+          "name": "科学家",
+          "cover": "templates/real_scientist.webp"
+        },
+        {
+          "id": "nurse",
+          "name": "护士",
+          "cover": "templates/real_nurse.webp"
+        },
+        {
+          "id": "construction_worker",
+          "name": "建筑工人",
+          "cover": "templates/real_construction_worker.webp"
+        },
+        {
+          "id": "astronaut",
+          "name": "宇航员",
+          "cover": "templates/real_astronaut.webp"
         }
       ]
     },
