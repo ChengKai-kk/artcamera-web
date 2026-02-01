@@ -1,46 +1,50 @@
 <template>
   <div class="app-page generate-page">
-    <header class="page-top">
-      <button class="home-btn" type="button" @click="goHome" aria-label="home">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 4.2 3 11.4v7.4a1 1 0 0 0 1 1h5.2v-5.6h5.6v5.6H20a1 1 0 0 0 1-1v-7.4l-9-7.2Z" />
-        </svg>
-      </button>
-      <div>
-        <div class="page-title-cn">照片生成效果</div>
-        <div class="page-title-en">PHOTO GENERATION EFFECT</div>
-      </div>
-      <div class="page-timer">{{ timerText }}</div>
-    </header>
+    <div class="generate-scale-wrap">
+      <div ref="contentRef" class="generate-scale-content" :style="contentStyle">
+        <header class="page-top">
+          <button class="home-btn" type="button" @click="goHome" aria-label="home">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 4.2 3 11.4v7.4a1 1 0 0 0 1 1h5.2v-5.6h5.6v5.6H20a1 1 0 0 0 1-1v-7.4l-9-7.2Z" />
+            </svg>
+          </button>
+          <div>
+            <div class="page-title-cn">照片生成效果</div>
+            <div class="page-title-en">PHOTO GENERATION EFFECT</div>
+          </div>
+          <div class="page-timer">{{ timerText }}</div>
+        </header>
 
-    <section class="panel result-panel">
-      <div v-if="status === 'success'" class="result-wrap">
-        <img :src="resultUrl" class="result-image" alt="result" />
-      </div>
-      <div v-else class="result-placeholder" :class="status">
-        <div class="orb"></div>
-        <div class="hint">
-          {{ status === "error" ? "生成失败，请重试" : "AI 影像处理中" }}
+        <section class="panel result-panel">
+          <div v-if="status === 'success'" class="result-wrap">
+            <img :src="resultUrl" class="result-image" alt="result" @load="scheduleContentScale" />
+          </div>
+          <div v-else class="result-placeholder" :class="status">
+            <div class="orb"></div>
+            <div class="hint">
+              {{ status === "error" ? "生成失败，请重试" : "AI 影像处理中" }}
+            </div>
+          </div>
+        </section>
+
+        <div class="action-row">
+          <button v-if="status === 'success'" class="btn btn-primary" @click="openQr">
+            查看二维码
+          </button>
+          <button v-if="status === 'success'" class="btn btn-secondary" @click="goTemplates">
+            重新选择模板
+          </button>
+          <button v-if="status === 'success'" class="btn btn-ghost" @click="goHome">
+            返回主页
+          </button>
+          <button v-if="status === 'error'" class="btn btn-primary" @click="reset">
+            重新生成
+          </button>
         </div>
+
+        <div v-if="status === 'error'" class="error-msg">{{ errorMsg }}</div>
       </div>
-    </section>
-
-    <div class="action-row">
-      <button v-if="status === 'success'" class="btn btn-primary" @click="openQr">
-        查看二维码
-      </button>
-      <button v-if="status === 'success'" class="btn btn-secondary" @click="goTemplates">
-        重新选择模板
-      </button>
-      <button v-if="status === 'success'" class="btn btn-ghost" @click="goHome">
-        返回主页
-      </button>
-      <button v-if="status === 'error'" class="btn btn-primary" @click="reset">
-        重新生成
-      </button>
     </div>
-
-    <div v-if="status === 'error'" class="error-msg">{{ errorMsg }}</div>
 
     <div v-if="showQr" class="qr-overlay">
       <div class="qr-card">
@@ -66,7 +70,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import QRCode from "qrcode";
 import { AI_CONFIG } from "@/config/ai";
@@ -82,6 +86,9 @@ let pollTimer = null;
 
 const showQr = ref(false);
 const qrDataUrl = ref("");
+const contentRef = ref(null);
+const contentScale = ref(1);
+let scaleRaf = null;
 
 const imageBase64 = sessionStorage.getItem("imageBase64");
 const styleId = sessionStorage.getItem("styleId") || "default";
@@ -98,6 +105,27 @@ let lastActiveAt = Date.now();
 let unbindIdle = null;
 
 const timerText = computed(() => `${timer.value}s`);
+const contentStyle = computed(() => ({
+  "--content-scale": contentScale.value.toString(),
+}));
+
+function updateContentScale() {
+  scaleRaf = null;
+  const contentEl = contentRef.value;
+  if (!contentEl) return;
+  const wrapEl = contentEl.parentElement;
+  if (!wrapEl) return;
+  const availableHeight = wrapEl.clientHeight;
+  if (!availableHeight) return;
+  const contentHeight = contentEl.scrollHeight;
+  const nextScale = contentHeight > availableHeight ? availableHeight / contentHeight : 1;
+  contentScale.value = Number(nextScale.toFixed(4));
+}
+
+function scheduleContentScale() {
+  if (scaleRaf) cancelAnimationFrame(scaleRaf);
+  scaleRaf = requestAnimationFrame(updateContentScale);
+}
 
 async function startGenerate() {
   if (!imageBase64) {
@@ -252,6 +280,8 @@ onMounted(() => {
     autoStarted.value = true;
     startGenerate();
   }
+  scheduleContentScale();
+  window.addEventListener("resize", scheduleContentScale, { passive: true });
 });
 
 onBeforeUnmount(() => {
@@ -259,6 +289,12 @@ onBeforeUnmount(() => {
   stopMainTimer();
   if (unbindIdle) unbindIdle();
   unbindIdle = null;
+  window.removeEventListener("resize", scheduleContentScale);
+});
+
+watch([status, resultUrl], async () => {
+  await nextTick();
+  scheduleContentScale();
 });
 </script>
 
@@ -269,10 +305,28 @@ onBeforeUnmount(() => {
   max-width: calc(var(--vw) * 100);
   height: calc(var(--vh) * 100);
   padding: 0;
+  position: relative;
+}
+
+.generate-scale-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.generate-scale-content {
+  width: 100%;
+  height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto auto;
   gap: clamp(22px, calc(var(--vh) * 3.4), 44px);
   justify-items: stretch;
+  transform: scale(var(--content-scale));
+  transform-origin: top center;
+  will-change: transform;
 }
 
 .generate-page .page-top {

@@ -1,5 +1,5 @@
 // src/router/index.js
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
 import Home from "../pages/Home.vue";
 import StyleSelect from "../pages/StyleSelect.vue";
@@ -21,7 +21,7 @@ const routes = [
 
 const router = createRouter({
   // 关键：GitHub Pages 部署在 /artcamera-web/ 下
-  history: createWebHistory("/artcamera-web/"),
+  history: createWebHashHistory("/artcamera-web/"),
   routes,
 });
 
