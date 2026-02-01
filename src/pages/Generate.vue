@@ -265,34 +265,34 @@ onBeforeUnmount(() => {
 <style scoped>
 .generate-page {
   align-items: stretch;
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
+  width: calc(var(--vw) * 100);
+  max-width: calc(var(--vw) * 100);
+  height: calc(var(--vh) * 100);
   padding: 0;
   display: grid;
   grid-template-rows: auto 1fr auto auto;
-  gap: clamp(22px, 3.4vh, 44px);
+  gap: clamp(22px, calc(var(--vh) * 3.4), 44px);
   justify-items: stretch;
 }
 
 .generate-page .page-top {
   width: 100%;
   max-width: 100%;
-  padding-top: clamp(52px, 7.8vh, 110px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .generate-page .page-title-cn {
-  font-size: clamp(68px, 8.4vh, 120px);
+  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
 }
 
 .generate-page .page-title-en {
-  font-size: clamp(28px, 3.4vh, 44px);
+  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
   letter-spacing: 2px;
 }
 
 .generate-page .page-timer {
-  font-size: clamp(40px, 5.2vh, 72px);
+  font-size: clamp(40px, calc(var(--vh) * 5.2), 72px);
 }
 
 .result-panel {
@@ -305,7 +305,7 @@ onBeforeUnmount(() => {
   background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0 clamp(24px, 3.2vh, 48px);
+  padding: 0 clamp(28px, calc(var(--vh) * 3.6), 60px);
 }
 
 .result-wrap {
@@ -320,7 +320,7 @@ onBeforeUnmount(() => {
   height: 100%;
   max-height: 100%;
   object-fit: cover;
-  border-radius: 28px;
+  border-radius: 32px;
   border: 3px solid rgba(80, 140, 210, 0.5);
   box-shadow: 0 22px 44px rgba(120, 140, 170, 0.28);
 }
@@ -330,13 +330,13 @@ onBeforeUnmount(() => {
   place-items: center;
   width: 100%;
   height: 100%;
-  gap: clamp(16px, 2.4vh, 32px);
+  gap: clamp(16px, calc(var(--vh) * 2.4), 32px);
   text-align: center;
 }
 
 .orb {
-  width: clamp(440px, 52vh, 840px);
-  height: clamp(440px, 52vh, 840px);
+  width: clamp(440px, calc(var(--vh) * 52), 840px);
+  height: clamp(440px, calc(var(--vh) * 52), 840px);
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, rgba(255, 190, 190, 0.95), rgba(116, 182, 255, 0.6));
   box-shadow: 0 0 36px rgba(198, 37, 45, 0.2);
@@ -346,28 +346,28 @@ onBeforeUnmount(() => {
 .hint {
   color: #5a6675;
   font-weight: 700;
-  font-size: clamp(42px, 5.4vh, 84px);
+  font-size: clamp(42px, calc(var(--vh) * 5.4), 84px);
 }
 
 .action-row {
   display: flex;
-  gap: clamp(16px, 2.4vh, 28px);
+  gap: clamp(16px, calc(var(--vh) * 2.4), 28px);
   flex-wrap: wrap;
   justify-content: center;
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .action-row .btn {
-  min-height: clamp(90px, 10vh, 140px);
-  font-size: clamp(50px, 6.5vh, 80px);
+  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
+  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
 }
 
 .error-msg {
   margin-top: 4px;
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
   color: #c6252d;
   text-align: center;
-  font-size: clamp(32px, 4.2vh, 56px);
+  font-size: clamp(32px, calc(var(--vh) * 4.2), 56px);
 }
 
 .qr-overlay {
@@ -381,42 +381,42 @@ onBeforeUnmount(() => {
 }
 
 .qr-card {
-  width: min(1050px, 90vw);
+  width: min(1200px, calc(var(--vw) * 90));
   background: rgba(255, 255, 255, 0.96);
   border-radius: 28px;
-  padding: clamp(36px, 4.6vh, 64px) clamp(32px, 4.2vh, 58px);
+  padding: clamp(36px, calc(var(--vh) * 4.6), 64px) clamp(32px, calc(var(--vh) * 4.2), 58px);
   box-shadow: 0 24px 56px rgba(0, 0, 0, 0.22);
   border: 2px solid rgba(255, 255, 255, 0.7);
   display: grid;
-  gap: clamp(16px, 2.6vh, 36px);
+  gap: clamp(16px, calc(var(--vh) * 2.6), 36px);
   justify-items: center;
   position: relative;
 }
 
 .qr-robot {
   position: absolute;
-  top: clamp(-18px, -2vh, -10px);
-  left: clamp(18px, 2.4vh, 32px);
-  width: clamp(70px, 8.6vh, 120px);
-  height: clamp(70px, 8.6vh, 120px);
-  border-radius: clamp(20px, 2.6vh, 36px);
+  top: clamp(-18px, calc(var(--vh) * -2), -10px);
+  left: clamp(18px, calc(var(--vh) * 2.4), 32px);
+  width: clamp(70px, calc(var(--vh) * 8.6), 120px);
+  height: clamp(70px, calc(var(--vh) * 8.6), 120px);
+  border-radius: clamp(20px, calc(var(--vh) * 2.6), 36px);
   background: linear-gradient(135deg, #65a0ff, #4e7bff);
   color: #ffffff;
   font-weight: 800;
   display: grid;
   place-items: center;
   box-shadow: 0 8px 20px rgba(90, 143, 255, 0.35);
-  font-size: clamp(28px, 3.6vh, 48px);
+  font-size: clamp(28px, calc(var(--vh) * 3.6), 48px);
 }
 
 .qr-title {
   font-weight: 700;
   color: #2d2f33;
-  font-size: clamp(48px, 6vh, 82px);
+  font-size: clamp(48px, calc(var(--vh) * 6), 82px);
 }
 
 .qr-frame {
-  width: min(680px, 70vw);
+  width: min(760px, calc(var(--vw) * 72));
   aspect-ratio: 1 / 1;
   background: #f1f1f1;
   border-radius: 24px;
@@ -431,63 +431,46 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: clamp(16px, 2.4vh, 32px);
+  padding: clamp(16px, calc(var(--vh) * 2.4), 32px);
 }
 
 .qr-label {
   position: absolute;
-  bottom: clamp(14px, 2vh, 24px);
+  bottom: clamp(14px, calc(var(--vh) * 2), 24px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(32px, 4vh, 56px);
+  font-size: clamp(32px, calc(var(--vh) * 4), 56px);
   color: #5a6675;
 }
 
 .loading {
   color: #5a6675;
-  font-size: clamp(32px, 4vh, 56px);
+  font-size: clamp(32px, calc(var(--vh) * 4), 56px);
 }
 
 .qr-cta {
   width: 100%;
-  padding: clamp(18px, 2.8vh, 36px) clamp(20px, 3.2vh, 48px);
+  padding: clamp(18px, calc(var(--vh) * 2.8), 36px) clamp(20px, calc(var(--vh) * 3.2), 48px);
   border-radius: 16px;
   background: linear-gradient(135deg, #cf2a32, #b81d27);
   color: #ffffff;
   font-weight: 700;
   text-align: center;
   box-shadow: 0 12px 26px rgba(207, 42, 50, 0.32);
-  font-size: clamp(42px, 5.4vh, 76px);
+  font-size: clamp(42px, calc(var(--vh) * 5.4), 76px);
 }
 
 .qr-actions {
   display: grid;
-  gap: clamp(14px, 2.2vh, 30px);
+  gap: clamp(14px, calc(var(--vh) * 2.2), 30px);
   width: 100%;
 }
 
 .qr-btn {
   width: 100%;
-  font-size: clamp(50px, 6.5vh, 80px);
-  padding-block: clamp(20px, 3.2vh, 40px);
+  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
+  padding-block: clamp(20px, calc(var(--vh) * 3.2), 40px);
 }
-
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  .result-panel {
-    padding-inline: clamp(28px, 3.6vh, 60px);
-  }
-  .result-image {
-    border-radius: 32px;
-  }
-  .qr-card {
-    width: min(1200px, 90vw);
-  }
-  .qr-frame {
-    width: min(760px, 72vw);
-  }
-}
-
 @keyframes breathe {
   0%, 100% { transform: scale(0.95); opacity: 0.8; }
   50% { transform: scale(1.05); opacity: 1; }

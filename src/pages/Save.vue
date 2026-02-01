@@ -96,14 +96,14 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .save-page {
-  min-height: 100vh;
+  min-height: calc(var(--vh) * 100);
   width: 100%;
   display: grid;
   place-items: center;
   background-size: cover;
   background-position: center;
   position: relative;
-  padding: clamp(16px, 3vh, 40px);
+  padding: clamp(16px, calc(var(--vh) * 3), 40px);
 }
 
 .save-page.has-result::before {
@@ -124,7 +124,7 @@ onBeforeUnmount(() => {
   text-align: center;
   display: grid;
   gap: 12px;
-  font-size: clamp(16px, 2vh, 22px);
+  font-size: clamp(16px, calc(var(--vh) * 2), 22px);
 }
 
 .save-content {
@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
 }
 
 .qr-card {
-  width: min(420px, 86vw);
+  width: min(420px, calc(var(--vw) * 86));
   background: rgba(255, 255, 255, 0.9);
   border-radius: 18px;
   padding: 18px;
@@ -164,11 +164,11 @@ onBeforeUnmount(() => {
 .qr-title {
   font-weight: 700;
   color: #2d2f33;
-  font-size: clamp(18px, 2.2vh, 26px);
+  font-size: clamp(18px, calc(var(--vh) * 2.2), 26px);
 }
 
 .qr-frame {
-  width: min(260px, 60vw);
+  width: min(260px, calc(var(--vw) * 60));
   aspect-ratio: 1 / 1;
   background: #f1f1f1;
   border-radius: 14px;
@@ -191,13 +191,13 @@ onBeforeUnmount(() => {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(14px, calc(var(--vh) * 1.6), 18px);
   color: #5a6675;
 }
 
 .loading {
   color: #5a6675;
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(14px, calc(var(--vh) * 1.6), 18px);
 }
 
 .actions {
@@ -215,6 +215,6 @@ onBeforeUnmount(() => {
   font-weight: 700;
   letter-spacing: 0.5px;
   box-shadow: 0 12px 26px rgba(207, 42, 50, 0.32);
-  font-size: clamp(16px, 2vh, 24px);
+  font-size: clamp(16px, calc(var(--vh) * 2), 24px);
 }
 </style>

@@ -274,47 +274,47 @@ onBeforeUnmount(() => {
 <style scoped>
 .camera-page {
   color: var(--text);
-  gap: clamp(24px, 3.4vh, 48px);
+  gap: clamp(24px, calc(var(--vh) * 3.4), 48px);
 }
 
 .camera-page .page-top {
-  padding-top: clamp(52px, 7.8vh, 110px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .camera-page .page-title-cn {
-  font-size: clamp(68px, 8.4vh, 120px);
+  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
 }
 
 .camera-page .page-title-en {
-  font-size: clamp(28px, 3.4vh, 44px);
+  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
   letter-spacing: 2px;
 }
 
 .camera-page .page-timer {
-  font-size: clamp(40px, 5.2vh, 72px);
+  font-size: clamp(40px, calc(var(--vh) * 5.2), 72px);
 }
 
 .check-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(18px, 2.6vh, 32px);
-  margin-top: clamp(8px, 1.6vh, 20px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  gap: clamp(18px, calc(var(--vh) * 2.6), 32px);
+  margin-top: clamp(8px, calc(var(--vh) * 1.6), 20px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .check-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(10px, 1.8vh, 18px);
-  font-size: clamp(26px, 3.2vh, 46px);
+  gap: clamp(10px, calc(var(--vh) * 1.8), 18px);
+  font-size: clamp(26px, calc(var(--vh) * 3.2), 46px);
   color: #4b4f57;
 }
 
 .check-thumb {
-  width: clamp(120px, 14vh, 200px);
-  height: clamp(120px, 14vh, 200px);
+  width: clamp(140px, calc(var(--vh) * 14), 220px);
+  height: clamp(140px, calc(var(--vh) * 14), 220px);
   border-radius: 18px;
   overflow: hidden;
   border: 2px solid rgba(198, 37, 45, 0.75);
@@ -334,12 +334,12 @@ onBeforeUnmount(() => {
 }
 
 .check-status {
-  width: clamp(36px, 4.2vh, 60px);
-  height: clamp(36px, 4.2vh, 60px);
+  width: clamp(36px, calc(var(--vh) * 4.2), 60px);
+  height: clamp(36px, calc(var(--vh) * 4.2), 60px);
   border-radius: 999px;
   display: grid;
   place-items: center;
-  font-size: clamp(22px, 3vh, 36px);
+  font-size: clamp(22px, calc(var(--vh) * 3), 36px);
   font-weight: 800;
   color: #ffffff;
   background: #c6252d;
@@ -361,7 +361,7 @@ onBeforeUnmount(() => {
   background: #f1f6ff;
   border: 3px solid #4aa4ff;
   aspect-ratio: 3 / 4;
-  min-height: clamp(520px, 58vh, 1280px);
+  min-height: clamp(640px, calc(var(--vh) * 62), 1440px);
   box-shadow: 0 18px 36px rgba(80, 140, 210, 0.25);
 }
 
@@ -385,7 +385,7 @@ onBeforeUnmount(() => {
   z-index: 3;
   display: grid;
   place-items: center;
-  font-size: clamp(90px, 12vh, 180px);
+  font-size: clamp(90px, calc(var(--vh) * 12), 180px);
   font-weight: 800;
   background: rgba(255, 255, 255, 0.65);
   color: #c6252d;
@@ -403,23 +403,23 @@ onBeforeUnmount(() => {
 }
 
 .errTitle {
-  font-size: clamp(32px, 4.2vh, 56px);
+  font-size: clamp(32px, calc(var(--vh) * 4.2), 56px);
   font-weight: 700;
 }
 
 .errDesc {
   margin-top: 8px;
-  font-size: clamp(22px, 3vh, 38px);
+  font-size: clamp(22px, calc(var(--vh) * 3), 38px);
   color: var(--muted);
 }
 
 .tip-row {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.8vh, 20px);
-  font-size: clamp(28px, 3.6vh, 50px);
+  gap: clamp(12px, calc(var(--vh) * 1.8), 20px);
+  font-size: clamp(28px, calc(var(--vh) * 3.6), 50px);
   color: #c6252d;
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .tip-badge {
@@ -428,7 +428,7 @@ onBeforeUnmount(() => {
   background: #c6252d;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(22px, 2.8vh, 36px);
+  font-size: clamp(22px, calc(var(--vh) * 2.8), 36px);
 }
 
 .tip-text {
@@ -439,38 +439,16 @@ onBeforeUnmount(() => {
 .action-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2.4vh, 28px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  gap: 24px;
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .action-row .btn {
-  min-height: clamp(90px, 10vh, 140px);
-  font-size: clamp(50px, 6.5vh, 80px);
+  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
+  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
 }
 
 .hidden {
   display: none;
-}
-
-@media (max-width: 720px) {
-  .check-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .action-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  .check-thumb {
-    width: clamp(140px, 14vh, 220px);
-    height: clamp(140px, 14vh, 220px);
-  }
-  .stage {
-    min-height: clamp(640px, 62vh, 1440px);
-  }
-  .action-row {
-    gap: 24px;
-  }
 }
 </style>

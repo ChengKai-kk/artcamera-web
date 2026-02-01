@@ -1,14 +1,20 @@
 /* Global tokens and base layout for kiosk UI (light theme) */
 * { box-sizing: border-box; }
-html, body, #app { height: 100%; margin: 0; }
+html, body, #app { width: 100%; height: 100%; margin: 0; padding: 0; }
 
 :root {
-  --site-max-width: 1700px;
-  --site-gap: clamp(18px, 2.4vh, 36px);
-  --radius-lg: 26px;
-  --radius-md: 18px;
-  --radius-sm: 14px;
-  --touch-size: 58px;
+  --design-width: 2160px;
+  --design-height: 3840px;
+  --vw: calc(var(--design-width) * 0.01);
+  --vh: calc(var(--design-height) * 0.01);
+  --scale: 1;
+
+  --site-max-width: 2000px;
+  --site-gap: clamp(30px, calc(var(--vh) * 3.2), 58px);
+  --radius-lg: 30px;
+  --radius-md: 22px;
+  --radius-sm: 16px;
+  --touch-size: 76px;
 
   --bg-0: rgb(251, 219, 209);
   --bg-1: rgb(253, 232, 226);
@@ -25,20 +31,20 @@ html, body, #app { height: 100%; margin: 0; }
   --accent: #4aa4ff;
   --accent-soft: #b8d7ff;
 
-  --btn-padding-vertical: clamp(12px, 1.5vh, 20px);
-  --btn-padding-horizontal: clamp(20px, 2.6vh, 34px);
-  --btn-font-size: clamp(18px, 2.2vh, 28px);
+  --btn-padding-vertical: clamp(18px, calc(var(--vh) * 2), 26px);
+  --btn-padding-horizontal: clamp(28px, calc(var(--vh) * 3.4), 44px);
+  --btn-font-size: clamp(26px, calc(var(--vh) * 2.9), 38px);
   --btn-radius: 16px;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+  background: var(--bg-1);
   color: var(--text);
   font-family: "Source Han Sans SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
   letter-spacing: 0.2px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 button,
@@ -53,9 +59,36 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-body::before {
-  content: "";
+.app-viewport {
   position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.app-stage-wrap {
+  width: calc(var(--design-width) * var(--scale));
+  height: calc(var(--design-height) * var(--scale));
+  position: relative;
+}
+
+.app-stage {
+  width: var(--design-width);
+  height: var(--design-height);
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+}
+
+.app-stage::before {
+  content: "";
+  position: absolute;
   inset: 0;
   background:
     radial-gradient(520px 520px at 12% 16%, rgba(255, 203, 189, 0.45), transparent 70%),
@@ -65,9 +98,9 @@ body::before {
   z-index: 0;
 }
 
-body::after {
+.app-stage::after {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent 35%),
@@ -76,14 +109,19 @@ body::after {
   z-index: 0;
 }
 
+.app-stage > * {
+  position: relative;
+  z-index: 1;
+}
+
 .app-page {
-  min-height: 100vh;
-  width: min(var(--site-max-width), 92vw);
+  min-height: calc(var(--vh) * 100);
+  width: min(var(--site-max-width), calc(var(--vw) * 92));
   margin: 0 auto;
   padding: var(--site-gap);
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 1.8vh, 26px);
+  gap: clamp(14px, calc(var(--vh) * 1.8), 26px);
   position: relative;
   z-index: 1;
   animation: pageIn 520ms ease both;
@@ -93,7 +131,7 @@ body::after {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: clamp(14px, 2vh, 24px);
+  padding: clamp(14px, calc(var(--vh) * 2), 24px);
   box-shadow: 0 20px 44px rgba(90, 120, 160, 0.22);
   backdrop-filter: blur(12px);
   animation: panelIn 600ms ease both;
@@ -144,7 +182,7 @@ body::after {
 
 .page-top {
   display: grid;
-  grid-template-columns: var(--touch-size) 1fr minmax(60px, auto);
+  grid-template-columns: var(--touch-size) 1fr minmax(110px, auto);
   align-items: center;
   gap: 12px;
 }
@@ -162,20 +200,20 @@ body::after {
 }
 
 .home-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   fill: #ffffff;
 }
 
 .page-title-cn {
-  font-size: clamp(24px, 3vh, 38px);
+  font-size: clamp(32px, calc(var(--vh) * 3.6), 50px);
   font-weight: 800;
   letter-spacing: 1px;
   color: #2d2f33;
 }
 
 .page-title-en {
-  font-size: clamp(12px, 1.6vh, 19px);
+  font-size: clamp(16px, calc(var(--vh) * 2.1), 26px);
   color: var(--muted);
   letter-spacing: 1.6px;
   text-transform: uppercase;
@@ -184,7 +222,7 @@ body::after {
 
 .page-timer {
   justify-self: end;
-  font-size: clamp(16px, 2.1vh, 24px);
+  font-size: clamp(22px, calc(var(--vh) * 2.8), 32px);
   font-weight: 700;
   color: #5b6572;
 }
@@ -193,91 +231,6 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
-}
-
-@media (max-width: 720px) {
-  :root {
-    --site-max-width: 960px;
-    --site-gap: clamp(10px, 1.6vh, 16px);
-    --btn-font-size: 13px;
-    --touch-size: 44px;
-  }
-  .page-top {
-    grid-template-columns: 42px 1fr 50px;
-  }
-  .home-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-  }
-}
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  :root {
-    --site-max-width: 1780px;
-    --site-gap: clamp(22px, 2.8vh, 44px);
-    --btn-padding-vertical: clamp(18px, 2vh, 26px);
-    --btn-padding-horizontal: clamp(28px, 3.4vh, 44px);
-    --btn-font-size: clamp(22px, 2.5vh, 34px);
-    --radius-lg: 30px;
-    --radius-md: 22px;
-    --radius-sm: 16px;
-    --touch-size: 68px;
-  }
-  .page-top {
-    grid-template-columns: var(--touch-size) 1fr minmax(96px, auto);
-  }
-  .home-btn {
-    width: var(--touch-size);
-    height: var(--touch-size);
-    border-radius: 999px;
-  }
-  .home-btn svg {
-    width: 24px;
-    height: 24px;
-  }
-  .page-title-cn {
-    font-size: clamp(30px, 3.4vh, 46px);
-  }
-  .page-title-en {
-    font-size: clamp(14px, 2vh, 24px);
-  }
-  .page-timer {
-    font-size: clamp(20px, 2.6vh, 30px);
-  }
-}
-
-@media (orientation: portrait) and (min-height: 3200px) {
-  :root {
-    --site-max-width: 1900px;
-    --site-gap: clamp(26px, 3vh, 54px);
-    --btn-font-size: clamp(24px, 2.7vh, 36px);
-  }
-  .page-top {
-    grid-template-columns: var(--touch-size) 1fr minmax(110px, auto);
-  }
-  .page-title-cn {
-    font-size: clamp(32px, 3.6vh, 50px);
-  }
-  .page-title-en {
-    font-size: clamp(16px, 2.1vh, 26px);
-  }
-  .page-timer {
-    font-size: clamp(22px, 2.8vh, 32px);
-  }
-}
-
-@media (orientation: portrait) and (min-height: 3600px) {
-  :root {
-    --site-max-width: 2000px;
-    --site-gap: clamp(30px, 3.2vh, 58px);
-    --btn-font-size: clamp(26px, 2.9vh, 38px);
-    --touch-size: 76px;
-  }
-  .home-btn svg {
-    width: 28px;
-    height: 28px;
-  }
 }
 
 @keyframes pageIn {

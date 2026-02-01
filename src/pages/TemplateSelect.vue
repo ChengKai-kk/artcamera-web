@@ -201,16 +201,16 @@ onMounted(load);
 }
 
 .template-page .page-top {
-  padding-top: clamp(36px, 5.6vh, 72px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-top: clamp(36px, calc(var(--vh) * 5.6), 72px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .template-page .page-title-cn {
-  font-size: clamp(75px, 9.75vh, 120px);
+  font-size: clamp(75px, calc(var(--vh) * 9.75), 120px);
 }
 
 .template-page .page-title-en {
-  font-size: clamp(28px, 3.4vh, 42px);
+  font-size: clamp(28px, calc(var(--vh) * 3.4), 42px);
   letter-spacing: 2px;
 }
 
@@ -223,18 +223,18 @@ onMounted(load);
 
 .error-title {
   font-weight: 700;
-  font-size: clamp(20px, 2.4vh, 32px);
+  font-size: clamp(20px, calc(var(--vh) * 2.4), 32px);
 }
 
 .error-desc {
   color: var(--muted);
-  font-size: clamp(14px, 1.6vh, 18px);
+  font-size: clamp(14px, calc(var(--vh) * 1.6), 18px);
 }
 
 .template-panel {
   background: var(--panel-strong);
   border: 2px solid rgba(74, 164, 255, 0.6);
-  padding: clamp(20px, 3vh, 36px);
+  padding: clamp(20px, calc(var(--vh) * 3), 36px);
   display: grid;
   align-content: center;
 }
@@ -246,9 +246,9 @@ onMounted(load);
   grid-template-areas:
     "main side"
     "bottom bottom";
-  gap: clamp(16px, 2.4vh, 26px);
+  gap: clamp(16px, calc(var(--vh) * 2.4), 26px);
   max-height: none;
-  min-height: clamp(520px, 58vh, 1280px);
+  min-height: clamp(520px, calc(var(--vh) * 58), 1280px);
   align-content: center;
 }
 
@@ -267,22 +267,22 @@ onMounted(load);
 .feature-side {
   grid-area: side;
   display: grid;
-  gap: clamp(16px, 2.4vh, 26px);
+  gap: clamp(16px, calc(var(--vh) * 2.4), 26px);
 }
 
 .feature-bottom {
   grid-area: bottom;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2.4vh, 26px);
+  gap: clamp(16px, calc(var(--vh) * 2.4), 26px);
 }
 
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(3, minmax(320px, 1fr));
-  gap: clamp(18px, 2.6vh, 30px);
+  gap: clamp(18px, calc(var(--vh) * 2.6), 30px);
   max-height: none;
-  min-height: clamp(520px, 58vh, 1280px);
+  min-height: clamp(680px, calc(var(--vh) * 62), 1500px);
   overflow-y: auto;
   padding-right: 8px;
   align-content: center;
@@ -340,7 +340,7 @@ onMounted(load);
 .placeholder {
   color: #6a7a90;
   font-weight: 700;
-  font-size: clamp(28px, 3.6vh, 40px);
+  font-size: clamp(36px, calc(var(--vh) * 4.8), 56px);
 }
 
 .template-label {
@@ -352,48 +352,14 @@ onMounted(load);
   background: rgba(0, 0, 0, 0.45);
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(40px, 5.2vh, 60px);
+  font-size: clamp(48px, calc(var(--vh) * 6), 72px);
   letter-spacing: 0.5px;
 }
 
 .back-btn {
   justify-self: center;
   padding-inline: 175px;
-  padding-block: clamp(28px, 3.6vh, 52px);
-  font-size: clamp(50px, 6.5vh, 80px);
-}
-
-@media (max-width: 900px) {
-  .grid-layout {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .grid-layout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .feature-layout {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "main"
-      "side"
-      "bottom";
-  }
-  .feature-bottom {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  .grid-layout {
-    min-height: clamp(680px, 62vh, 1500px);
-  }
-  .template-label {
-    font-size: clamp(48px, 6vh, 72px);
-  }
-  .placeholder {
-    font-size: clamp(36px, 4.8vh, 56px);
-  }
+  padding-block: clamp(28px, calc(var(--vh) * 3.6), 52px);
+  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
 }
 </style>

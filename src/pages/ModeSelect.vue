@@ -140,31 +140,31 @@ onBeforeUnmount(() => {
   width: 100%;
   max-width: 100%;
   margin: 0;
-  height: 100vh;
+  height: calc(var(--vh) * 100);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   justify-items: stretch;
-  gap: clamp(10px, 1.4vh, 18px);
+  gap: clamp(10px, calc(var(--vh) * 1.4), 18px);
   padding: 0;
-  width: 100vw;
-  max-width: 100vw;
-  padding-bottom: clamp(36px, 5.2vh, 78px);
+  width: calc(var(--vw) * 100);
+  max-width: calc(var(--vw) * 100);
+  padding-bottom: clamp(36px, calc(var(--vh) * 5.2), 78px);
   overflow: hidden;
 }
 
 .mode-page .page-top {
   width: 100%;
   max-width: 100%;
-  padding-top: clamp(52px, 7.8vh, 110px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .mode-page .page-title-cn {
-  font-size: clamp(68px, 8.4vh, 120px);
+  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
 }
 
 .mode-page .page-title-en {
-  font-size: clamp(28px, 3.4vh, 44px);
+  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
   letter-spacing: 2px;
 }
 
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
   display: grid;
   align-content: stretch;
   justify-items: stretch;
-  padding: 0 clamp(24px, 3.2vh, 48px);
+  padding: 0 clamp(24px, calc(var(--vh) * 3.2), 48px);
   background: transparent;
   border: none;
   box-shadow: none;
@@ -216,7 +216,7 @@ onBeforeUnmount(() => {
   background: #c6252d;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(56px, 7.2vh, 88px);
+  font-size: clamp(56px, calc(var(--vh) * 7.2), 88px);
   box-shadow: 0 12px 26px rgba(198, 37, 45, 0.3);
 }
 
@@ -226,13 +226,13 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 12px;
   text-align: center;
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
 }
 
 .countdown-title {
   font-weight: 700;
   color: #5a6675;
-  font-size: clamp(34px, 4.6vh, 56px);
+  font-size: clamp(34px, calc(var(--vh) * 4.6), 56px);
 }
 
 .countdown-options {
@@ -243,14 +243,14 @@ onBeforeUnmount(() => {
 }
 
 .countdown-chip {
-  min-width: 240px;
+  min-width: 280px;
   padding: 24px 44px;
   border-radius: 999px;
   border: 1px solid rgba(80, 140, 210, 0.35);
   background: rgba(255, 255, 255, 0.9);
   font-weight: 700;
   color: #4a5565;
-  font-size: clamp(44px, 5.6vh, 72px);
+  font-size: clamp(44px, calc(var(--vh) * 5.6), 72px);
   cursor: pointer;
 }
 
@@ -265,36 +265,19 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(18px, 2.6vh, 36px);
-  padding-inline: clamp(24px, 3.2vh, 48px);
+  gap: clamp(18px, calc(var(--vh) * 2.6), 36px);
+  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
   flex-wrap: wrap;
 }
 
 .action-row .btn {
-  width: min(520px, 40vw);
-  font-size: clamp(56px, 7.2vh, 88px);
-  padding-block: clamp(26px, 3.4vh, 44px);
-  min-height: clamp(90px, 10vh, 140px);
+  width: min(600px, calc(var(--vw) * 40));
+  font-size: clamp(56px, calc(var(--vh) * 7.2), 88px);
+  padding-block: clamp(26px, calc(var(--vh) * 3.4), 44px);
+  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
 }
 
 .shoot-btn {
   justify-self: center;
-}
-
-@media (orientation: portrait) and (min-height: 2400px) {
-  .mode-card {
-    width: 100%;
-    max-width: 100%;
-    height: 100%;
-  }
-  .preview {
-    height: 100%;
-  }
-  .action-row .btn {
-    width: min(600px, 40vw);
-  }
-  .countdown-chip {
-    min-width: 280px;
-  }
 }
 </style>
