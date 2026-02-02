@@ -35,7 +35,7 @@
               :src="templateCover(mainTemplate)"
               :alt="mainTemplate.name"
             />
-            <div v-else class="placeholder">更多模板...</div>
+            <div v-else class="placeholder">{{ placeholderText(mainTemplate) }}</div>
             <div v-if="mainTemplate.cover" class="template-label">{{ mainTemplate.name }}</div>
           </div>
         </button>
@@ -51,7 +51,7 @@
           >
             <div class="template-thumb" :class="{ empty: !tpl.cover }">
               <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
-              <div v-else class="placeholder">更多模板...</div>
+              <div v-else class="placeholder">{{ placeholderText(tpl) }}</div>
               <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
             </div>
           </button>
@@ -68,7 +68,7 @@
           >
             <div class="template-thumb small" :class="{ empty: !tpl.cover }">
               <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
-              <div v-else class="placeholder">更多模板...</div>
+              <div v-else class="placeholder">{{ placeholderText(tpl) }}</div>
               <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
             </div>
           </button>
@@ -86,7 +86,7 @@
         >
           <div class="template-thumb" :class="{ empty: !tpl.cover }">
             <img v-if="tpl.cover" :src="templateCover(tpl)" :alt="tpl.name" />
-            <div v-else class="placeholder">更多模板...</div>
+            <div v-else class="placeholder">{{ placeholderText(tpl) }}</div>
             <div v-if="tpl.cover" class="template-label">{{ tpl.name }}</div>
           </div>
         </button>
@@ -138,6 +138,12 @@ const bottomTemplates = computed(() => templates.value.slice(3, 6));
 
 function templateCover(tpl) {
   return resolveAsset(tpl?.cover || "");
+}
+
+function placeholderText(tpl) {
+  if (!tpl) return "暂无封面";
+  if (tpl.id === "more") return "更多模板...";
+  return tpl.name || "暂无封面";
 }
 
 async function load() {

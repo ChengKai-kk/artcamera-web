@@ -14,34 +14,49 @@
       "templatesLayout": "grid",
       "templates": [
         {
-          "id": "flower_girl",
-          "name": "国风奇幻",
-          "cover": "templates/west_flower_girl.webp"
-        },
-        {
           "id": "celestial_general",
-          "name": "天宫神将",
+          "name": "孙悟空",
           "cover": "templates/west_celestial_general.webp"
         },
         {
           "id": "temple_monk",
-          "name": "禅院清修",
+          "name": "唐僧",
           "cover": "templates/west_temple_monk.webp"
         },
         {
           "id": "mountain_myth",
-          "name": "仙山云海",
+          "name": "沙僧",
           "cover": "templates/west_mountain_myth.webp"
         },
         {
           "id": "lantern_festival",
-          "name": "灯会夜色",
+          "name": "猪八戒",
           "cover": "templates/west_lantern_festival.webp"
         },
         {
-          "id": "west_journey",
-          "name": "西游行旅",
-          "cover": "templates/west_west_journey.webp"
+          "id": "bull_demon_king",
+          "name": "牛魔王",
+          "cover": "templates/west_bull_demon_king.webp"
+        },
+        {
+          "id": "princess_iron_fan",
+          "name": "铁扇公主",
+          "cover": "templates/west_princess_iron_fan.webp"
+        },
+        {
+          "id": "red_boy",
+          "name": "红孩儿",
+          "cover": "templates/west_red_boy.webp"
+        },
+        {
+          "id": "tathagata",
+          "name": "如来",
+          "cover": "templates/west_tathagata.webp"
+        },
+        {
+          "id": "guanyin",
+          "name": "观音",
+          "cover": "templates/west_guanyin.webp"
         }
       ]
     },
