@@ -1,5 +1,6 @@
 <template>
-  <div class="save-page" :class="{ 'has-result': resultUrl }" :style="pageStyle">
+  <div class="save-page" :class="{ 'has-result': resultUrl }">
+    <div v-if="resultUrl" class="result-image" :style="resultStyle" aria-hidden="true"></div>
     <div v-if="!resultUrl" class="empty panel">
       <p>没有找到生成结果，请先生成图片。</p>
       <div class="actions">
@@ -37,7 +38,7 @@ const qrDataUrl = ref("");
 const IDLE_MS = 60 * 1000;
 let idleTimer = null;
 
-const pageStyle = computed(() => {
+const resultStyle = computed(() => {
   if (!resultUrl.value) return {};
   return {
     backgroundImage: `url(${resultUrl.value})`,
@@ -100,10 +101,9 @@ onBeforeUnmount(() => {
   width: 100%;
   display: grid;
   place-items: center;
-  background-size: cover;
-  background-position: center;
   position: relative;
   padding: clamp(16px, calc(var(--vh) * 3), 40px);
+  background: #f2f4f8;
 }
 
 .save-page.has-result::before {
@@ -112,12 +112,25 @@ onBeforeUnmount(() => {
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
+  z-index: 1;
+}
+
+.result-image {
+  position: absolute;
+  left: 360px;
+  top: 902px;
+  width: 1437px;
+  height: 2053px;
+  border-radius: 40px;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
 }
 
 .save-content,
 .empty {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .empty {

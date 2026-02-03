@@ -79,6 +79,9 @@ const resultUrl = ref("");
 const taskId = ref("");
 const autoStarted = ref(false);
 let pollTimer = null;
+let perfT0 = null;
+let perfT1 = null;
+let perfT2 = null;
 
 const showQr = ref(false);
 const qrDataUrl = ref("");
@@ -99,6 +102,23 @@ let unbindIdle = null;
 
 const timerText = computed(() => `${timer.value}s`);
 
+function resetPerf() {
+  perfT0 = null;
+  perfT1 = null;
+  perfT2 = null;
+}
+
+function toSeconds(ms) {
+  return (ms / 1000).toFixed(1);
+}
+
+function parseHeaderMs(resp, name) {
+  const v = resp.headers.get(name);
+  if (!v) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
 async function startGenerate() {
   if (!imageBase64) {
     status.value = "error";
@@ -107,6 +127,8 @@ async function startGenerate() {
   }
 
   status.value = "generating";
+  resetPerf();
+  perfT0 = performance.now();
 
   try {
     const resp = await fetch(`${AI_CONFIG.BASE_URL}/generate`, {
@@ -122,6 +144,21 @@ async function startGenerate() {
     });
 
     const data = await resp.json();
+    perfT1 = performance.now();
+    console.log(`[perf] generate=${toSeconds(perfT1 - perfT0)}s`);
+
+    const tBody = parseHeaderMs(resp, "X-Perf-Body-Parse");
+    const tProvider = parseHeaderMs(resp, "X-Perf-Provider");
+    const tTotal = parseHeaderMs(resp, "X-Perf-Total");
+    if (tTotal !== null) {
+      const netApprox = Math.max(0, perfT1 - perfT0 - tTotal);
+      console.log(
+        `[perf] server body_parse=${toSeconds(tBody || 0)}s provider=${toSeconds(
+          tProvider || 0
+        )}s total=${toSeconds(tTotal)}s`
+      );
+      console.log(`[perf] network+upload≈${toSeconds(netApprox)}s`);
+    }
     if (!resp.ok || !data.taskId) {
       throw new Error(data.error || "生成任务创建失败");
     }
@@ -129,6 +166,10 @@ async function startGenerate() {
     taskId.value = data.taskId;
     pollTask();
   } catch (err) {
+    if (perfT0) {
+      const tEnd = performance.now();
+      console.log(`[perf] generate=${toSeconds(tEnd - perfT0)}s`);
+    }
     status.value = "error";
     errorMsg.value = err.message || "生成失败";
   }
@@ -151,11 +192,23 @@ function pollTask() {
         resultUrl.value = data.resultUrl;
         sessionStorage.setItem("resultUrl", resultUrl.value);
         status.value = "success";
+        perfT2 = performance.now();
+        if (perfT1 && perfT0) {
+          console.log(
+            `[perf] poll=${toSeconds(perfT2 - perfT1)}s total=${toSeconds(
+              perfT2 - perfT0
+            )}s`
+          );
+        }
         clearInterval(pollTimer);
       } else if (data.status === "FAILED") {
         throw new Error(data.error || "生成失败");
       }
     } catch (err) {
+      if (perfT1) {
+        const tEnd = performance.now();
+        console.log(`[perf] poll=${toSeconds(tEnd - perfT1)}s`);
+      }
       status.value = "error";
       errorMsg.value = err.message || "轮询失败";
       clearInterval(pollTimer);
@@ -227,6 +280,7 @@ function reset() {
   resultUrl.value = "";
   taskId.value = "";
   autoStarted.value = true;
+  resetPerf();
   startGenerate();
 }
 
@@ -264,61 +318,91 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .generate-page {
-  align-items: stretch;
-  width: calc(var(--vw) * 100);
-  max-width: calc(var(--vw) * 100);
-  height: calc(var(--vh) * 100);
+  position: absolute;
+  inset: 0;
+  width: 2160px;
+  height: 3840px;
   padding: 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: clamp(22px, calc(var(--vh) * 3.4), 44px);
-  justify-items: stretch;
+  display: block;
+  overflow: hidden;
 }
 
 .generate-page .page-top {
-  width: 100%;
-  max-width: 100%;
-  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+  position: absolute;
+  top: 278px;
+  left: 0;
+  width: 2160px;
+  height: 220px;
+  padding: 0;
+  display: block;
 }
 
-.generate-page .page-title-cn {
-  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
+.generate-page .page-top .home-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 220px;
 }
 
-.generate-page .page-title-en {
-  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
-  letter-spacing: 2px;
+.generate-page .page-top > div:not(.page-timer) {
+  position: absolute;
+  top: 0;
+  left: 362px;
+  width: 1116px;
+  height: 219px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
 }
 
 .generate-page .page-timer {
-  font-size: clamp(40px, calc(var(--vh) * 5.2), 72px);
+  position: absolute;
+  top: 0;
+  left: 1788px;
+  width: 165px;
+  height: 137px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-weight: 700;
+  color: #333333;
+}
+
+.generate-page .page-title-cn {
+  font-size: 100px;
+}
+
+.generate-page .page-title-en {
+  font-size: 60px;
+  letter-spacing: 0;
+}
+
+.generate-page .page-timer {
+  font-size: 100px;
 }
 
 .result-panel {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  min-height: clamp(640px, calc(var(--vh) * 62), 1440px);
-  display: grid;
-  place-items: center;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0 clamp(28px, calc(var(--vh) * 3.6), 60px);
+  all: unset;
+  position: absolute;
+  top: 902px;
+  left: 360px;
+  width: 1437px;
+  height: 1803px;
+  display: block;
+  border-radius: 40px;
 }
 
 .result-wrap {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 28px;
+  width: 1437px;
+  height: 1803px;
+  border-radius: 40px;
   overflow: hidden;
-  background: #f1f6ff;
-  border: 3px solid #4aa4ff;
-  box-shadow: 0 18px 36px rgba(80, 140, 210, 0.25);
   display: grid;
   place-items: center;
+  background: #f2f4f8;
 }
 
 .result-image {
@@ -337,8 +421,8 @@ onBeforeUnmount(() => {
 }
 
 .orb {
-  width: clamp(440px, calc(var(--vh) * 52), 840px);
-  height: clamp(440px, calc(var(--vh) * 52), 840px);
+  width: 520px;
+  height: 520px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, rgba(255, 190, 190, 0.95), rgba(116, 182, 255, 0.6));
   box-shadow: 0 0 36px rgba(198, 37, 45, 0.2);
@@ -348,32 +432,36 @@ onBeforeUnmount(() => {
 .hint {
   color: #5a6675;
   font-weight: 700;
-  font-size: clamp(42px, calc(var(--vh) * 5.4), 84px);
+  font-size: 84px;
 }
 
 .action-row {
+  position: absolute;
+  top: 3308px;
+  left: 0;
+  width: 2160px;
+  height: 136px;
   display: flex;
-  gap: clamp(16px, calc(var(--vh) * 2.4), 28px);
-  flex-wrap: wrap;
   justify-content: center;
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
-  position: sticky;
-  bottom: 0;
-  background: linear-gradient(180deg, rgba(251, 219, 209, 0), rgba(251, 219, 209, 0.92) 40%, rgba(251, 219, 209, 0.98) 100%);
-  padding-bottom: clamp(16px, calc(var(--vh) * 2.4), 32px);
+  gap: 80px;
+  padding: 0;
 }
 
 .action-row .btn {
-  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
-  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
+  width: 440px;
+  height: 136px;
+  font-size: 56px;
 }
 
 .error-msg {
-  margin-top: 4px;
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+  position: absolute;
+  top: 3490px;
+  left: 0;
+  width: 2160px;
+  padding: 0 48px;
   color: #c6252d;
   text-align: center;
-  font-size: clamp(32px, calc(var(--vh) * 4.2), 56px);
+  font-size: 56px;
 }
 
 .qr-overlay {

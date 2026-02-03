@@ -20,23 +20,7 @@
       </div>
     </section>
 
-    <section class="countdown-panel">
-      <div class="countdown-title">倒计时设置</div>
-      <div class="countdown-options">
-        <button
-          v-for="sec in delayOptions"
-          :key="sec"
-          class="countdown-chip"
-          :class="{ active: delaySec === sec }"
-          @click="delaySec = sec"
-        >
-          {{ sec }}s
-        </button>
-      </div>
-    </section>
-
     <div class="action-row">
-      <button class="btn btn-ghost back-btn" @click="goBack">返回</button>
       <button class="btn btn-primary shoot-btn" @click="startShooting">
         现场拍摄
       </button>
@@ -135,37 +119,73 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .mode-page {
-  color: var(--text);
+  color: #333333;
+  font-family: "Alibaba PuHuiTi", "Source Han Sans SC", "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
   align-items: center;
-  width: 100%;
-  max-width: 100%;
+  width: calc(var(--vw) * 100);
+  max-width: calc(var(--vw) * 100);
   margin: 0;
   height: calc(var(--vh) * 100);
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   justify-items: stretch;
-  gap: clamp(10px, calc(var(--vh) * 1.4), 18px);
   padding: 0;
-  width: calc(var(--vw) * 100);
-  max-width: calc(var(--vw) * 100);
-  padding-bottom: clamp(36px, calc(var(--vh) * 5.2), 78px);
+  gap: 0;
   overflow: hidden;
+  background:
+    radial-gradient(720px 720px at 12% 12%, rgba(255, 226, 214, 0.7), transparent 70%),
+    radial-gradient(860px 860px at 88% 16%, rgba(215, 232, 255, 0.65), transparent 70%),
+    radial-gradient(760px 760px at 84% 84%, rgba(255, 214, 226, 0.5), transparent 70%),
+    linear-gradient(150deg, rgba(246, 250, 255, 0.9) 0%, rgba(255, 244, 236, 0.9) 45%, rgba(255, 242, 250, 0.95) 100%);
 }
 
 .mode-page .page-top {
   width: 100%;
   max-width: 100%;
-  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+  padding-top: calc(var(--vh) * 7.25);
+  padding-left: 0;
+  padding-right: 0;
+  grid-template-columns: 220px 1116px 1fr;
+  column-gap: 142px;
+  align-items: center;
+}
+
+.mode-page .home-btn {
+  width: 220px;
+  height: 220px;
+  border-radius: 0 200px 200px 0;
+  box-shadow: none;
+  background: #ba1313;
+  justify-self: start;
+}
+
+.mode-page .home-btn svg {
+  width: 100px;
+  height: 100px;
 }
 
 .mode-page .page-title-cn {
-  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
+  font-size: calc(var(--vh) * 2.6);
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: 0;
 }
 
 .mode-page .page-title-en {
-  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
-  letter-spacing: 2px;
+  font-size: calc(var(--vh) * 1.56);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #333333;
+  margin-top: 8px;
+}
+
+.mode-page .page-timer {
+  font-size: calc(var(--vh) * 2.6);
+  font-weight: 700;
+  color: #333333;
+  justify-self: start;
 }
 
 .mode-card {
@@ -173,91 +193,57 @@ onBeforeUnmount(() => {
   max-width: 100%;
   height: 100%;
   min-height: 0;
-  display: grid;
-  align-content: stretch;
-  justify-items: stretch;
-  padding: 0 clamp(24px, calc(var(--vh) * 3.2), 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   background: transparent;
   border: none;
   box-shadow: none;
   backdrop-filter: none;
-  grid-template-rows: 1fr;
   align-self: stretch;
+  margin-top: 0;
+  transform: none;
+  pointer-events: none;
 }
 
 .preview {
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  max-height: none;
-  border-radius: 24px;
-  border: 3px solid rgba(80, 140, 210, 0.45);
+  width: calc(var(--vw) * 66.5);
+  height: calc(var(--vh) * 53.45);
+  border-radius: 40px;
   overflow: hidden;
   background: #f1f6ff;
   display: grid;
   place-items: center;
   position: relative;
-  box-shadow: 0 18px 36px rgba(120, 150, 190, 0.24);
+  box-shadow: none;
+  border: none;
+  transform: translateY(50px);
 }
 
 .preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 40px;
 }
 
 .tag {
   position: absolute;
-  bottom: 24px;
+  bottom: 148px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 14px 40px;
-  border-radius: 999px;
-  background: #c6252d;
+  width: 440px;
+  height: 120px;
+  border-radius: 200px;
+  background: #ba1313;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(56px, calc(var(--vh) * 7.2), 88px);
-  box-shadow: 0 12px 26px rgba(198, 37, 45, 0.3);
-}
-
-.countdown-panel {
-  width: 100%;
-  max-width: 100%;
+  font-size: 58px;
   display: grid;
-  gap: 12px;
-  text-align: center;
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
-}
-
-.countdown-title {
-  font-weight: 700;
-  color: #5a6675;
-  font-size: clamp(34px, calc(var(--vh) * 4.6), 56px);
-}
-
-.countdown-options {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.countdown-chip {
-  min-width: 280px;
-  padding: 24px 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(80, 140, 210, 0.35);
-  background: rgba(255, 255, 255, 0.9);
-  font-weight: 700;
-  color: #4a5565;
-  font-size: clamp(44px, calc(var(--vh) * 5.6), 72px);
-  cursor: pointer;
-}
-
-.countdown-chip.active {
-  background: #c6252d;
-  color: #ffffff;
-  border-color: #c6252d;
+  place-items: center;
+  box-shadow: none;
+  padding: 0;
 }
 
 .action-row {
@@ -265,19 +251,26 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(18px, calc(var(--vh) * 2.6), 36px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
-  flex-wrap: wrap;
+  padding: 0;
+  margin-top: calc(var(--vh) * 5.36);
+  margin-bottom: calc(var(--vh) * 11.85);
+  z-index: 2;
+  pointer-events: auto;
 }
 
 .action-row .btn {
-  width: min(600px, calc(var(--vw) * 40));
-  font-size: clamp(56px, calc(var(--vh) * 7.2), 88px);
-  padding-block: clamp(26px, calc(var(--vh) * 3.4), 44px);
-  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
+  width: 440px;
+  height: 136px;
+  font-size: 56px;
+  padding: 0;
+  min-height: 136px;
 }
 
 .shoot-btn {
-  justify-self: center;
+  background: #ba1313;
+  border: none;
+  color: #ffffff;
+  box-shadow: none;
+  pointer-events: auto;
 }
 </style>

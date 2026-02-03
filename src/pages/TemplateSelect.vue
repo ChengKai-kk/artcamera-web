@@ -7,7 +7,7 @@
         </svg>
       </button>
       <div>
-        <div class="page-title-cn">请选择照片模板</div>
+        <div class="page-title-cn">请选择照片模版</div>
         <div class="page-title-en">PLEASE SELECT A PHOTO TEMPLATE</div>
       </div>
       <div class="page-timer"></div>
@@ -142,7 +142,7 @@ function templateCover(tpl) {
 
 function placeholderText(tpl) {
   if (!tpl) return "暂无封面";
-  if (tpl.id === "more") return "更多模板...";
+  if (tpl.id === "more") return "更多模版...";
   return tpl.name || "暂无封面";
 }
 
@@ -203,21 +203,57 @@ onMounted(load);
 
 <style scoped>
 .template-page {
-  color: var(--text);
+  color: #333333;
+  font-family: "Alibaba PuHuiTi", "Source Han Sans SC", "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  background:
+    radial-gradient(720px 720px at 12% 12%, rgba(255, 226, 214, 0.7), transparent 70%),
+    radial-gradient(860px 860px at 88% 16%, rgba(215, 232, 255, 0.65), transparent 70%),
+    radial-gradient(760px 760px at 84% 84%, rgba(255, 214, 226, 0.5), transparent 70%),
+    linear-gradient(150deg, rgba(246, 250, 255, 0.9) 0%, rgba(255, 244, 236, 0.9) 45%, rgba(255, 242, 250, 0.95) 100%);
 }
 
 .template-page .page-top {
-  padding-top: clamp(36px, calc(var(--vh) * 5.6), 72px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+  padding-top: calc(var(--vh) * 7.25);
+  padding-left: 0;
+  padding-right: 0;
+  grid-template-columns: 220px 1fr 200px;
+  column-gap: 142px;
+  align-items: center;
+}
+
+.template-page .home-btn {
+  width: 220px;
+  height: 220px;
+  border-radius: 0 200px 200px 0;
+  box-shadow: none;
+  background: #ba1313;
+  justify-self: start;
+}
+
+.template-page .home-btn svg {
+  width: 100px;
+  height: 100px;
 }
 
 .template-page .page-title-cn {
-  font-size: clamp(75px, calc(var(--vh) * 9.75), 120px);
+  font-size: calc(var(--vh) * 2.6);
+  font-weight: 700;
+  color: #333333;
+  letter-spacing: 0;
 }
 
 .template-page .page-title-en {
-  font-size: clamp(28px, calc(var(--vh) * 3.4), 42px);
-  letter-spacing: 2px;
+  font-size: calc(var(--vh) * 1.56);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #333333;
+  margin-top: 8px;
 }
 
 .loading,
@@ -238,11 +274,11 @@ onMounted(load);
 }
 
 .template-panel {
-  background: var(--panel-strong);
-  border: 2px solid rgba(74, 164, 255, 0.6);
-  padding: clamp(20px, calc(var(--vh) * 3), 36px);
-  display: grid;
-  align-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin-top: calc(var(--vh) * 10.95);
 }
 
 .feature-layout {
@@ -285,27 +321,31 @@ onMounted(load);
 
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(3, minmax(320px, 1fr));
-  gap: clamp(18px, calc(var(--vh) * 2.6), 30px);
-  max-height: none;
-  min-height: clamp(680px, calc(var(--vh) * 62), 1500px);
+  grid-template-columns: repeat(3, calc(var(--vw) * 21));
+  column-gap: calc(var(--vw) * 1.76);
+  row-gap: calc(var(--vh) * 1.43);
+  width: calc((var(--vw) * 21 * 3) + (var(--vw) * 1.76 * 2));
+  height: calc(var(--vh) * 53.72);
+  margin: 0 auto;
   overflow-y: auto;
-  padding-right: 8px;
-  align-content: center;
+  padding-right: 0;
+  align-content: start;
 }
 
 .grid-layout::-webkit-scrollbar {
-  width: 8px;
+  width: 26px;
 }
 
 .grid-layout::-webkit-scrollbar-track {
-  background: rgba(180, 190, 205, 0.35);
-  border-radius: 999px;
+  background: rgba(146, 146, 146, 0.3);
+  border-radius: 40px;
 }
 
 .grid-layout::-webkit-scrollbar-thumb {
-  background: rgba(150, 160, 175, 0.65);
-  border-radius: 999px;
+  background: rgba(140, 140, 140, 0.8);
+  border-radius: 40px;
+  border: 8px solid transparent;
+  background-clip: content-box;
 }
 
 .disabled {
@@ -315,14 +355,15 @@ onMounted(load);
 
 .template-thumb {
   position: relative;
-  border-radius: 16px;
+  border-radius: 40px;
   overflow: hidden;
-  border: 2px solid rgba(90, 150, 220, 0.4);
-  background: #f0f6ff;
-  aspect-ratio: 3 / 4;
+  border: none;
+  background: transparent;
   display: grid;
   place-items: center;
-  box-shadow: 0 14px 26px rgba(120, 150, 190, 0.22);
+  box-shadow: none;
+  width: calc(var(--vw) * 21);
+  height: calc(var(--vh) * 16.95);
 }
 
 .template-thumb.large {
@@ -337,35 +378,51 @@ onMounted(load);
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 40px;
 }
 
 .template-thumb.empty {
-  border-style: dashed;
+  border: 2px dashed rgba(120, 120, 120, 0.4);
 }
 
 .placeholder {
-  color: #6a7a90;
+  color: #ffffff;
   font-weight: 700;
-  font-size: clamp(36px, calc(var(--vh) * 4.8), 56px);
+  font-size: calc(var(--vh) * 1.46);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
 }
 
 .template-label {
   position: absolute;
-  left: 10px;
-  bottom: 10px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   color: #ffffff;
   font-weight: 700;
-  font-size: clamp(48px, calc(var(--vh) * 6), 72px);
-  letter-spacing: 0.5px;
+  font-size: calc(var(--vh) * 1.46);
+  letter-spacing: 0;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
 }
 
 .back-btn {
   justify-self: center;
-  padding-inline: 175px;
-  padding-block: clamp(28px, calc(var(--vh) * 3.6), 52px);
-  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
+  width: 440px;
+  height: 136px;
+  padding: 0;
+  margin-top: calc(var(--vh) * 8.54);
+  margin-bottom: calc(var(--vh) * 10.3);
+  margin-left: auto;
+  margin-right: auto;
+  font-size: calc(var(--vh) * 1.46);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  border-radius: 24px;
+  background: #6f88a4;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
 }
 </style>

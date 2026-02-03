@@ -1,31 +1,19 @@
 <template>
   <div class="app-page camera-page">
-    <header class="page-top">
-      <button class="home-btn" type="button" @click="goHome" aria-label="home">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 4.2 3 11.4v7.4a1 1 0 0 0 1 1h5.2v-5.6h5.6v5.6H20a1 1 0 0 0 1-1v-7.4l-9-7.2Z" />
-        </svg>
-      </button>
-      <div>
-        <div class="page-title-cn">开始拍摄</div>
-        <div class="page-title-en">START SHOOTING</div>
-      </div>
-      <div class="page-timer">{{ timerText }}</div>
-    </header>
+    <div class="camera-bg" aria-hidden="true"></div>
 
-    <div class="check-row">
-      <div v-for="item in checks" :key="item.label" class="check-item">
-        <div class="check-thumb">
-          <img :src="item.image" :alt="item.label" />
-        </div>
-        <div class="check-text">{{ item.label }}</div>
-        <div class="check-status" :class="item.ok ? 'ok' : 'no'">
-          <span>{{ item.ok ? "✓" : "×" }}</span>
-        </div>
-      </div>
-    </div>
+    <button
+      class="camera-home-hit"
+      type="button"
+      @click="goHome"
+      aria-label="home"
+    ></button>
 
-    <section class="stage">
+    <img class="camera-title" :src="cameraTitle" alt="开始拍摄 Start shooting" />
+    <img class="camera-note" :src="cameraNote" alt="" aria-hidden="true" />
+    <div class="camera-timer" aria-live="polite">{{ timerText }}</div>
+
+    <section class="camera-media">
       <video
         ref="videoEl"
         class="video"
@@ -53,20 +41,26 @@
       </div>
     </section>
 
-    <div class="tip-row">
-      <span class="tip-badge">温馨提示</span>
-      <span class="tip-text">拍摄时，请不要晃动手机和眼镜，拍摄效果越好哦</span>
-    </div>
 
-    <div class="action-row">
-      <button class="btn btn-ghost" @click="goBack">返回</button>
-      <button class="btn btn-secondary" @click="retake" :disabled="busy">
-        重新拍摄
-      </button>
-      <button class="btn btn-primary" @click="confirm" :disabled="busy || !photoDataUrl">
-        点击确认
-      </button>
-    </div>
+    <button class="camera-btn camera-btn-back" @click="goBack" aria-label="返回">
+      <img :src="cameraBack" alt="" aria-hidden="true" />
+    </button>
+    <button
+      class="camera-btn camera-btn-retake"
+      @click="retake"
+      :disabled="busy"
+      aria-label="重新拍摄"
+    >
+      <img :src="cameraRetake" alt="" aria-hidden="true" />
+    </button>
+    <button
+      class="camera-btn camera-btn-confirm"
+      @click="confirm"
+      :disabled="busy || !photoDataUrl"
+      aria-label="点击确认"
+    >
+      <img :src="cameraConfirm" alt="" aria-hidden="true" />
+    </button>
 
     <canvas ref="canvasEl" class="hidden"></canvas>
   </div>
@@ -76,10 +70,11 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import check1 from "../assets/steps/check-1.webp";
-import check2 from "../assets/steps/check-2.webp";
-import check3 from "../assets/steps/check-3.webp";
-import check4 from "../assets/effects/check-4.webp";
+import cameraTitle from "../assets/camera/camera-title.webp";
+import cameraNote from "../assets/camera/camera-note.webp";
+import cameraBack from "../assets/camera/camera-back.webp";
+import cameraRetake from "../assets/camera/camera-retake.webp";
+import cameraConfirm from "../assets/camera/camera-confirm.webp";
 const router = useRouter();
 const route = useRoute();
 
@@ -99,13 +94,6 @@ const delaySec = ref(3);
 const timer = ref(50);
 let timerId = null;
 
-const checks = [
-  { label: "五官清晰", ok: true, image: check1 },
-  { label: "正确镜头", ok: false, image: check2 },
-  { label: "面无遮挡", ok: false, image: check3 },
-  { label: "光线充足", ok: false, image: check4 },
-];
-
 const styleId = computed(() => {
   if (themeId.value && templateId.value) return `${themeId.value}_${templateId.value}`;
   return themeId.value || templateId.value || "default";
@@ -113,8 +101,145 @@ const styleId = computed(() => {
 
 const timerText = computed(() => `${timer.value}s`);
 
+function getDataUrlMime(dataUrl) {
+  const s = String(dataUrl || "");
+  const m = s.match(/^data:([^;]+);base64,/);
+  return m ? m[1] : "";
+}
+
+function base64ByteLength(b64) {
+  const s = String(b64 || "").replace(/[\r\n\s]/g, "");
+  if (!s) return 0;
+  const pad = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
+  return Math.max(0, Math.floor((s.length * 3) / 4) - pad);
+}
+
+function dataUrlByteLength(dataUrl) {
+  const s = String(dataUrl || "");
+  const comma = s.indexOf(",");
+  if (comma < 0) return 0;
+  return base64ByteLength(s.slice(comma + 1));
+}
+
+function formatBytes(bytes) {
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n <= 0) return "0B";
+  const units = ["B", "KB", "MB", "GB"];
+  let v = n;
+  let i = 0;
+  while (v >= 1024 && i < units.length - 1) {
+    v /= 1024;
+    i += 1;
+  }
+  const digits = i === 0 ? 0 : v < 10 ? 2 : v < 100 ? 1 : 0;
+  return `${v.toFixed(digits)}${units[i]}`;
+}
+
+function savePhotoMeta({ captureW, captureH, uploadW, uploadH, uploadMime, uploadBytes, rawBytes }) {
+  const meta = {
+    capture: { w: captureW, h: captureH },
+    upload: { w: uploadW, h: uploadH, mime: uploadMime, bytes: uploadBytes },
+  };
+  if (typeof rawBytes === "number") {
+    meta.raw = { mime: "image/jpeg", quality: 0.92, bytes: rawBytes };
+  }
+  sessionStorage.setItem("artcam_photo_meta", JSON.stringify(meta));
+
+  if (typeof rawBytes === "number") {
+    console.log(
+      `[photo] 拍照=${captureW}x${captureH} 原始=JPEG(0.92) ${formatBytes(
+        rawBytes
+      )} 压缩后=${uploadMime} ${formatBytes(uploadBytes)}`
+    );
+  } else {
+    console.log(
+      `[photo] 拍照=${captureW}x${captureH} 压缩后=${uploadMime} ${formatBytes(uploadBytes)}`
+    );
+  }
+}
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve) => {
+    canvas.toBlob(
+      (blob) => resolve(blob),
+      type,
+      quality
+    );
+  });
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result || "");
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function compressCanvasToTarget(canvas, targetBytes) {
+  const mime = "image/jpeg";
+  const qualityStart = 0.8;
+  const minQuality = 0.5;
+  const minLongEdge = 720;
+  const maxSteps = 12;
+
+  let curCanvas = canvas;
+  let quality = qualityStart;
+  let blob = null;
+
+  for (let step = 0; step < maxSteps; step += 1) {
+    blob = await canvasToBlob(curCanvas, mime, quality);
+    const size = blob ? blob.size : 0;
+    if (size > 0 && size <= targetBytes) {
+      const dataUrl = await blobToDataUrl(blob);
+      return {
+        dataUrl,
+        bytes: size,
+        mime,
+        quality,
+        w: curCanvas.width,
+        h: curCanvas.height,
+      };
+    }
+
+    if (quality > minQuality) {
+      quality = Math.max(minQuality, quality - 0.1);
+      continue;
+    }
+
+    const longEdge = Math.max(curCanvas.width, curCanvas.height);
+    if (longEdge <= minLongEdge) {
+      break;
+    }
+
+    const scale = Math.max(minLongEdge / longEdge, 0.85);
+    const nextW = Math.max(1, Math.round(curCanvas.width * scale));
+    const nextH = Math.max(1, Math.round(curCanvas.height * scale));
+    const resized = document.createElement("canvas");
+    resized.width = nextW;
+    resized.height = nextH;
+    const rctx = resized.getContext("2d");
+    rctx.drawImage(curCanvas, 0, 0, nextW, nextH);
+    curCanvas = resized;
+    quality = qualityStart;
+  }
+
+  if (!blob) {
+    blob = await canvasToBlob(curCanvas, mime, quality);
+  }
+  const dataUrl = blob ? await blobToDataUrl(blob) : "";
+  return {
+    dataUrl,
+    bytes: blob ? blob.size : 0,
+    mime,
+    quality,
+    w: curCanvas.width,
+    h: curCanvas.height,
+  };
 }
 
 async function ensureVideoReady(video) {
@@ -197,7 +322,24 @@ async function capturePhoto() {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, w, h);
 
-    photoDataUrl.value = canvas.toDataURL("image/jpeg", 0.92);
+    // Baseline (before compression): JPEG 0.92
+    const rawBlob = await canvasToBlob(canvas, "image/jpeg", 0.92);
+    const rawBytes = rawBlob ? rawBlob.size : 0;
+
+    // Upload (after compression): target <= 300KB, allow quality and size reduction.
+    const targetBytes = 300 * 1024;
+    const out = await compressCanvasToTarget(canvas, targetBytes);
+    photoDataUrl.value = out.dataUrl;
+
+    savePhotoMeta({
+      captureW: w,
+      captureH: h,
+      uploadW: out.w,
+      uploadH: out.h,
+      uploadMime: out.mime,
+      uploadBytes: out.bytes,
+      rawBytes,
+    });
   } finally {
     busy.value = false;
     countdown.value = 0;
@@ -273,96 +415,98 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .camera-page {
-  color: var(--text);
-  gap: clamp(24px, calc(var(--vh) * 3.4), 48px);
-}
-
-.camera-page .page-top {
-  padding-top: clamp(52px, calc(var(--vh) * 7.8), 110px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
-}
-
-.camera-page .page-title-cn {
-  font-size: clamp(68px, calc(var(--vh) * 8.4), 120px);
-}
-
-.camera-page .page-title-en {
-  font-size: clamp(28px, calc(var(--vh) * 3.4), 44px);
-  letter-spacing: 2px;
-}
-
-.camera-page .page-timer {
-  font-size: clamp(40px, calc(var(--vh) * 5.2), 72px);
-}
-
-.check-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(18px, calc(var(--vh) * 2.6), 32px);
-  margin-top: clamp(8px, calc(var(--vh) * 1.6), 20px);
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
-}
-
-.check-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(10px, calc(var(--vh) * 1.8), 18px);
-  font-size: clamp(26px, calc(var(--vh) * 3.2), 46px);
-  color: #4b4f57;
-}
-
-.check-thumb {
-  width: clamp(140px, calc(var(--vh) * 14), 220px);
-  height: clamp(140px, calc(var(--vh) * 14), 220px);
-  border-radius: 18px;
+  width: var(--design-width);
+  height: var(--design-height);
+  padding: 0;
+  margin: 0;
+  display: block;
+  color: #333333;
+  position: relative;
   overflow: hidden;
-  border: 2px solid rgba(198, 37, 45, 0.75);
-  background: #ffffff;
-  box-shadow: 0 12px 22px rgba(120, 140, 170, 0.18);
 }
 
-.check-thumb img {
+.camera-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background:
+    radial-gradient(1200px 1200px at 14% 18%, rgba(255, 214, 201, 0.9), transparent 68%),
+    radial-gradient(1400px 1400px at 88% 22%, rgba(255, 234, 223, 0.9), transparent 72%),
+    radial-gradient(1600px 1600px at 72% 78%, rgba(252, 209, 198, 0.7), transparent 70%),
+    linear-gradient(135deg, #f7cfc2 0%, #f8d9cf 40%, #f3c2b6 100%);
+  z-index: 0;
+  pointer-events: none;
 }
 
-.check-text {
-  font-weight: 600;
-  color: #3f434b;
+.camera-title {
+  position: absolute;
+  top: 278px;
+  left: 362px;
+  width: 1116px;
+  height: 219px;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.check-status {
-  width: clamp(36px, calc(var(--vh) * 4.2), 60px);
-  height: clamp(36px, calc(var(--vh) * 4.2), 60px);
+.camera-note {
+  position: absolute;
+  top: 590px;
+  left: 362px;
+  width: 1436px;
+  height: 468px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.camera-timer {
+  position: absolute;
+  top: 278px;
+  left: 1788px;
+  width: 165px;
+  height: 137px;
+  font-size: 100px;
+  font-weight: 700;
+  font-family: "Alibaba PuHuiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+
+.camera-home-hit {
+  position: absolute;
+  top: 278px;
+  left: 0;
+  width: 220px;
+  height: 220px;
   border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-size: clamp(22px, calc(var(--vh) * 3), 36px);
-  font-weight: 800;
-  color: #ffffff;
-  background: #c6252d;
-  box-shadow: 0 8px 16px rgba(198, 37, 45, 0.3);
+  background: transparent;
+  border: none;
+  z-index: 4;
+  cursor: pointer;
 }
 
-.check-status.ok {
-  background: #c6252d;
-}
-
-.check-status.no {
-  background: #c6252d;
-}
-
-.stage {
-  position: relative;
-  border-radius: 28px;
+.camera-media {
+  position: absolute;
+  top: 1152px;
+  left: 360px;
+  width: 1437px;
+  height: 1803px;
+  border-radius: 40px;
   overflow: hidden;
-  background: #f1f6ff;
-  border: 3px solid #4aa4ff;
-  aspect-ratio: 3 / 4;
-  min-height: clamp(640px, calc(var(--vh) * 62), 1440px);
-  box-shadow: 0 18px 36px rgba(80, 140, 210, 0.25);
+  background: #000000;
+  z-index: 3;
+  -webkit-mask-image: url("../assets/camera/camera-mask.webp");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: url("../assets/camera/camera-mask.webp");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 .video,
@@ -385,7 +529,7 @@ onBeforeUnmount(() => {
   z-index: 3;
   display: grid;
   place-items: center;
-  font-size: clamp(90px, calc(var(--vh) * 12), 180px);
+  font-size: 180px;
   font-weight: 800;
   background: rgba(255, 255, 255, 0.65);
   color: #c6252d;
@@ -403,49 +547,49 @@ onBeforeUnmount(() => {
 }
 
 .errTitle {
-  font-size: clamp(32px, calc(var(--vh) * 4.2), 56px);
+  font-size: 56px;
   font-weight: 700;
 }
 
 .errDesc {
   margin-top: 8px;
-  font-size: clamp(22px, calc(var(--vh) * 3), 38px);
+  font-size: 38px;
   color: var(--muted);
 }
 
-.tip-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, calc(var(--vh) * 1.8), 20px);
-  font-size: clamp(28px, calc(var(--vh) * 3.6), 50px);
-  color: #c6252d;
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+.camera-btn {
+  position: absolute;
+  top: 3308px;
+  width: 440px;
+  height: 136px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 4;
 }
 
-.tip-badge {
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: #c6252d;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: clamp(22px, calc(var(--vh) * 2.8), 36px);
+.camera-btn img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.tip-text {
-  color: #c6252d;
-  font-weight: 600;
+.camera-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.action-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  padding-inline: clamp(24px, calc(var(--vh) * 3.2), 48px);
+.camera-btn-back {
+  left: 340px;
 }
 
-.action-row .btn {
-  min-height: clamp(90px, calc(var(--vh) * 10), 140px);
-  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
+.camera-btn-retake {
+  left: 860px;
+}
+
+.camera-btn-confirm {
+  left: 1380px;
 }
 
 .hidden {
