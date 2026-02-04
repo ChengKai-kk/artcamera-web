@@ -52,13 +52,6 @@ const registerAppProtocol = () => {
 }
 
 const setupPermissions = () => {
-  const allowedOrigins = new Set([
-    `${APP_PROTOCOL}://.`,
-    DEV_SERVER_URL ? new URL(DEV_SERVER_URL).origin : null,
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-  ].filter(Boolean))
-
   session.defaultSession.setPermissionRequestHandler(
     (webContents, permission, callback, details) => {
       if (permission !== "media") {
@@ -67,12 +60,17 @@ const setupPermissions = () => {
       }
 
       const requestUrl = details?.requestingUrl || webContents.getURL()
-      try {
-        const origin = new URL(requestUrl).origin
-        callback(allowedOrigins.has(origin))
-      } catch (error) {
-        callback(false)
+      // 允许自定义协议和本地开发服务器访问相机
+      if (
+        requestUrl.startsWith(`${APP_PROTOCOL}://`) ||
+        requestUrl.startsWith("http://localhost:") ||
+        requestUrl.startsWith("http://127.0.0.1:")
+      ) {
+        callback(true)
+        return
       }
+
+      callback(false)
     }
   )
 }
