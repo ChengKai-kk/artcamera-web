@@ -20,8 +20,12 @@ const routes = [
 ];
 
 const router = createRouter({
-  // 关键：GitHub Pages 部署在 /artcamera-web/ 下
-  history: createWebHashHistory("/artcamera-web/"),
+  // 关键：base 由 Vite 的 base 配置注入（支持 GH Pages + 桌面端）
+  history: createWebHashHistory(
+    import.meta.env.BASE_URL?.startsWith(".")
+      ? "/"
+      : import.meta.env.BASE_URL
+  ),
   routes,
 });
 
