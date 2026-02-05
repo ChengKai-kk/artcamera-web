@@ -1,5 +1,5 @@
 <template>
-  <div class="home-page">
+  <div class="home-page" @click="start">
     <div class="hero-carousel" aria-label="首页轮播">
       <div
         class="carousel-track"
@@ -23,7 +23,7 @@
           :class="{ active: index === currentSlide }"
           type="button"
           :aria-label="`切换到第${index + 1}张`"
-          @click="goToSlide(index)"
+          @click.stop="goToSlide(index)"
         ></button>
       </div>
     </div>
@@ -99,6 +99,7 @@ onBeforeUnmount(() => {
   background: #ffffff;
   font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
   color: #1f1f1f;
+  cursor: pointer;
 }
 
 .hero-carousel {

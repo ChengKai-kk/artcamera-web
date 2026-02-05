@@ -11,6 +11,17 @@
     <div v-else class="style-root">
       <div class="style-bg" :style="{ backgroundImage: `url(${fullBgUrl})` }" aria-hidden="true"></div>
 
+      <div class="style-carousel" aria-label="右上角轮播图">
+        <img
+          v-for="(slide, index) in slides"
+          :key="slide"
+          class="style-carousel-slide"
+          :class="{ active: index === currentSlide }"
+          :src="slide"
+          :alt="`轮播图 ${index + 1}`"
+        />
+      </div>
+
       <button class="sample-btn" type="button" @click.stop="openSample">
         <span class="sr-only">样片模版展示</span>
       </button>
@@ -35,14 +46,23 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+
+import slide2 from "../assets/home/home-slide-2.webp";
+import slide3 from "../assets/home/home-slide-3.webp";
+import slide4 from "../assets/home/home-slide-4.webp";
+import slide5 from "../assets/home/home-slide-5.webp";
 
 const router = useRouter();
 
 const status = ref("loading");
 const errorMsg = ref("");
 const data = ref(null);
+
+const slides = [slide2, slide3, slide4, slide5];
+const currentSlide = ref(0);
+let timerId = null;
 
 const themes = computed(() => data.value?.themes || []);
 
@@ -71,6 +91,20 @@ async function load() {
   }
 }
 
+function startAutoPlay() {
+  stopAutoPlay();
+  timerId = setInterval(() => {
+    currentSlide.value = (currentSlide.value + 1) % slides.length;
+  }, 3500);
+}
+
+function stopAutoPlay() {
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
+  }
+}
+
 function selectThemeByIndex(index) {
   const theme = themes.value?.[index];
   const themeId = theme?.id || fallbackIds[index] || fallbackIds[0];
@@ -88,7 +122,14 @@ function goHome() {
   router.push("/");
 }
 
-onMounted(load);
+onMounted(() => {
+  load();
+  startAutoPlay();
+});
+
+onBeforeUnmount(() => {
+  stopAutoPlay();
+});
 </script>
 
 <style scoped>
@@ -131,6 +172,32 @@ onMounted(load);
   background-size: 2160px 3840px;
   background-position: left top;
   z-index: 1;
+}
+
+.style-carousel {
+  position: absolute;
+  left: 1237px;
+  top: 484px;
+  width: 671px;
+  height: 855.77px;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.style-carousel-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.style-carousel-slide.active {
+  opacity: 1;
 }
 
 .sample-btn {

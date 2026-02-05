@@ -13,13 +13,23 @@
       <div class="page-timer">{{ timerText }}</div>
     </header>
 
-    <section class="panel result-panel">
+    <section class="panel result-panel" :class="{ 'is-loading': status === 'idle' || status === 'generating' }">
       <div class="result-wrap">
         <img v-if="status === 'success'" :src="resultUrl" class="result-image" alt="result" />
         <div v-else class="result-placeholder" :class="status">
-          <div class="orb"></div>
-          <div class="hint">
-            {{ status === "error" ? "生成失败，请重试" : "AI 影像处理中" }}
+          <div v-if="status === 'error'" class="gen-error">
+            <div class="hint">生成失败，请重试</div>
+          </div>
+          <div v-else class="gen-loading">
+            <div class="gen-title" aria-hidden="true">
+              <div class="gen-title-main">PHOTO GENERATION</div>
+              <div class="gen-title-sub">COUNTDOWN</div>
+            </div>
+
+            <FlipCounter class="gen-flip" :value="flipValue" :digits="2" />
+
+            <img class="gen-processing" :src="generateProcessingUrl" alt="照片生成中" />
+            <img class="gen-logo" :src="generateLogoUrl" alt="Jinshan Cultural Expo Park" />
           </div>
         </div>
       </div>
@@ -42,23 +52,17 @@
 
     <div v-if="status === 'error'" class="error-msg">{{ errorMsg }}</div>
 
-    <div v-if="showQr" class="qr-overlay">
-      <div class="qr-card">
-        <div class="qr-robot">AI</div>
-        <div class="qr-title">照片下载中</div>
-        <div class="qr-frame">
-          <img v-if="qrDataUrl" :src="qrDataUrl" class="qr-img" alt="qr" />
-          <div v-else class="loading">二维码生成中...</div>
-          <div class="qr-label">二维码</div>
-        </div>
-        <div class="qr-cta">扫描二维码获取电子版照片</div>
-        <div class="qr-actions">
-          <button class="btn btn-secondary qr-btn" type="button" @click="goHome">
-            无操作{{ idleSeconds }}s后返回
-          </button>
-          <button class="btn btn-ghost qr-btn" type="button" @click="goHome">
-            返回首页
-          </button>
+    <div v-if="showQr" class="qr-overlay" role="dialog" aria-modal="true">
+      <div class="qr-modal">
+        <button class="qr-close" type="button" @click="closeQr" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+
+        <img class="qr-frame-bg" :src="qrFrameUrl" alt="" aria-hidden="true" />
+        <div class="qr-slot" aria-label="二维码">
+          <img v-if="qrDataUrl" :src="qrDataUrl" class="qr-img" alt="二维码" />
         </div>
       </div>
     </div>
@@ -70,6 +74,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import QRCode from "qrcode";
 import { AI_CONFIG } from "@/config/ai";
+import FlipCounter from "@/components/FlipCounter.vue";
 
 const router = useRouter();
 
@@ -89,9 +94,18 @@ const qrDataUrl = ref("");
 const imageBase64 = sessionStorage.getItem("imageBase64");
 const styleId = sessionStorage.getItem("styleId") || "default";
 
+const baseUrl = import.meta.env.BASE_URL;
+const generateLogoUrl = `${baseUrl}generate/generate-logo.webp`;
+const generateProcessingUrl = `${baseUrl}generate/generate-processing.webp`;
+const qrFrameUrl = `${baseUrl}qrcode/qr-frame-a.webp`;
+
 const totalSeconds = 180;
 const timer = ref(totalSeconds);
 let timerId = null;
+
+const elapsedSec = ref(0);
+let elapsedTimerId = null;
+const flipValue = computed(() => elapsedSec.value % 100);
 
 const IDLE_MS = 90 * 1000;
 const idleSeconds = ref(Math.floor(IDLE_MS / 1000));
@@ -119,6 +133,21 @@ function parseHeaderMs(resp, name) {
   return Number.isFinite(n) ? n : null;
 }
 
+function stopElapsed() {
+  if (elapsedTimerId) {
+    clearInterval(elapsedTimerId);
+    elapsedTimerId = null;
+  }
+}
+
+function startElapsed() {
+  stopElapsed();
+  elapsedSec.value = 0;
+  elapsedTimerId = setInterval(() => {
+    elapsedSec.value += 1;
+  }, 1000);
+}
+
 async function startGenerate() {
   if (!imageBase64) {
     status.value = "error";
@@ -127,6 +156,7 @@ async function startGenerate() {
   }
 
   status.value = "generating";
+  startElapsed();
   resetPerf();
   perfT0 = performance.now();
 
@@ -166,6 +196,7 @@ async function startGenerate() {
     taskId.value = data.taskId;
     pollTask();
   } catch (err) {
+    stopElapsed();
     if (perfT0) {
       const tEnd = performance.now();
       console.log(`[perf] generate=${toSeconds(tEnd - perfT0)}s`);
@@ -192,6 +223,7 @@ function pollTask() {
         resultUrl.value = data.resultUrl;
         sessionStorage.setItem("resultUrl", resultUrl.value);
         status.value = "success";
+        stopElapsed();
         perfT2 = performance.now();
         if (perfT1 && perfT0) {
           console.log(
@@ -205,6 +237,7 @@ function pollTask() {
         throw new Error(data.error || "生成失败");
       }
     } catch (err) {
+      stopElapsed();
       if (perfT1) {
         const tEnd = performance.now();
         console.log(`[perf] poll=${toSeconds(tEnd - perfT1)}s`);
@@ -218,7 +251,7 @@ function pollTask() {
 
 async function makeQr(url) {
   qrDataUrl.value = await QRCode.toDataURL(url, {
-    width: 800,
+    width: 420,
     margin: 2,
   });
 }
@@ -257,8 +290,13 @@ async function openQr() {
   if (!resultUrl.value) return;
   if (!qrDataUrl.value) await makeQr(resultUrl.value);
   showQr.value = true;
-  stopMainTimer();
   if (!unbindIdle) unbindIdle = bindIdleEvents();
+}
+
+function closeQr() {
+  showQr.value = false;
+  if (unbindIdle) unbindIdle();
+  unbindIdle = null;
 }
 
 function goHome() {
@@ -311,6 +349,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(pollTimer);
   stopMainTimer();
+  stopElapsed();
   if (unbindIdle) unbindIdle();
   unbindIdle = null;
 });
@@ -325,6 +364,8 @@ onBeforeUnmount(() => {
   padding: 0;
   display: block;
   overflow: hidden;
+  background: url("/template-bg.webp") center / cover no-repeat;
+  background-color: #ffffff;
 }
 
 .generate-page .page-top {
@@ -335,6 +376,7 @@ onBeforeUnmount(() => {
   height: 220px;
   padding: 0;
   display: block;
+  z-index: 6;
 }
 
 .generate-page .page-top .home-btn {
@@ -343,6 +385,20 @@ onBeforeUnmount(() => {
   left: 0;
   width: 220px;
   height: 220px;
+  border-radius: 0 200px 200px 0;
+  box-shadow: none;
+  background: #ba1313;
+  border: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.generate-page .page-top .home-btn svg {
+  width: 100px;
+  height: 100px;
+  fill: #ffffff;
 }
 
 .generate-page .page-top > div:not(.page-timer) {
@@ -387,22 +443,41 @@ onBeforeUnmount(() => {
 .result-panel {
   all: unset;
   position: absolute;
-  top: 902px;
+  top: 624px;
   left: 360px;
   width: 1437px;
-  height: 1803px;
+  height: 1879px;
   display: block;
   border-radius: 40px;
+  z-index: 1;
+}
+
+.result-panel.is-loading {
+  top: 0;
+  left: 0;
+  width: 2160px;
+  height: 3840px;
+  border-radius: 0;
 }
 
 .result-wrap {
   width: 1437px;
-  height: 1803px;
+  height: 1879px;
   border-radius: 40px;
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: #f2f4f8;
+  background:
+    radial-gradient(980px 980px at 18% 24%, rgba(170, 222, 255, 0.55), transparent 66%),
+    radial-gradient(980px 980px at 82% 20%, rgba(255, 222, 196, 0.55), transparent 66%),
+    radial-gradient(1100px 1100px at 78% 86%, rgba(255, 206, 231, 0.45), transparent 66%),
+    linear-gradient(140deg, rgba(247, 250, 255, 0.95), rgba(255, 248, 241, 0.95) 55%, rgba(255, 248, 255, 0.97));
+}
+
+.result-panel.is-loading .result-wrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
 }
 
 .result-image {
@@ -412,21 +487,65 @@ onBeforeUnmount(() => {
 }
 
 .result-placeholder {
-  display: grid;
-  place-items: center;
   width: 100%;
   height: 100%;
-  gap: clamp(16px, calc(var(--vh) * 2.4), 32px);
   text-align: center;
 }
 
-.orb {
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 190, 190, 0.95), rgba(116, 182, 255, 0.6));
-  box-shadow: 0 0 36px rgba(198, 37, 45, 0.2);
-  animation: breathe 2.4s ease-in-out infinite;
+.gen-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 760px 80px 120px;
+  gap: 56px;
+}
+
+.gen-title {
+  display: grid;
+  gap: 10px;
+}
+
+.gen-title-main {
+  font-weight: 900;
+  font-size: 104px;
+  color: rgba(45, 47, 51, 0.86);
+  letter-spacing: 1px;
+}
+
+.gen-title-sub {
+  font-weight: 900;
+  font-size: 76px;
+  color: rgba(45, 47, 51, 0.76);
+  letter-spacing: 1px;
+}
+
+.gen-flip {
+  --flip-digit-w: 420px;
+  --flip-digit-h: 580px;
+  --flip-gap: 96px;
+}
+
+.gen-processing {
+  width: 372px;
+  height: auto;
+  margin-top: 8px;
+  opacity: 0.92;
+}
+
+.gen-logo {
+  width: 440px;
+  height: auto;
+  opacity: 0.9;
+  margin-top: auto;
+}
+
+.gen-error {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
 
 .hint {
@@ -467,106 +586,74 @@ onBeforeUnmount(() => {
 .qr-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  display: grid;
-  place-items: center;
+  background: transparent;
   z-index: 20;
-  backdrop-filter: blur(2px);
 }
 
-.qr-card {
-  width: min(1200px, calc(var(--vw) * 90));
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 28px;
-  padding: clamp(36px, calc(var(--vh) * 4.6), 64px) clamp(32px, calc(var(--vh) * 4.2), 58px);
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.22);
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  display: grid;
-  gap: clamp(16px, calc(var(--vh) * 2.6), 36px);
-  justify-items: center;
-  position: relative;
-}
-
-.qr-robot {
+.qr-modal {
+  width: 566px;
+  height: 776px;
   position: absolute;
-  top: clamp(-18px, calc(var(--vh) * -2), -10px);
-  left: clamp(18px, calc(var(--vh) * 2.4), 32px);
-  width: clamp(70px, calc(var(--vh) * 8.6), 120px);
-  height: clamp(70px, calc(var(--vh) * 8.6), 120px);
-  border-radius: clamp(20px, calc(var(--vh) * 2.6), 36px);
-  background: linear-gradient(135deg, #65a0ff, #4e7bff);
-  color: #ffffff;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 20px rgba(90, 143, 255, 0.35);
-  font-size: clamp(28px, calc(var(--vh) * 3.6), 48px);
+  left: 50%;
+  top: 1176px;
+  transform: translateX(calc(-50% - 1px));
 }
 
-.qr-title {
-  font-weight: 700;
-  color: #2d2f33;
-  font-size: clamp(48px, calc(var(--vh) * 6), 82px);
-}
-
-.qr-frame {
-  width: min(760px, calc(var(--vw) * 72));
-  aspect-ratio: 1 / 1;
-  background: #f1f1f1;
-  border-radius: 24px;
-  border: 2px solid rgba(180, 180, 180, 0.7);
+.qr-close {
+  position: absolute;
+  top: -24px;
+  right: -24px;
+  z-index: 2;
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.92);
   display: grid;
   place-items: center;
-  position: relative;
-  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.qr-close:active {
+  transform: scale(0.98);
+}
+
+.qr-close svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #333333;
+  stroke-width: 3.2px;
+  stroke-linecap: round;
+}
+
+.qr-frame-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.qr-slot {
+  position: absolute;
+  left: 18px;
+  top: 24px;
+  width: 530px;
+  height: 530px;
+  padding: 55px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
 }
 
 .qr-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: clamp(16px, calc(var(--vh) * 2.4), 32px);
-}
-
-.qr-label {
-  position: absolute;
-  bottom: clamp(14px, calc(var(--vh) * 2), 24px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(32px, calc(var(--vh) * 4), 56px);
-  color: #5a6675;
-}
-
-.loading {
-  color: #5a6675;
-  font-size: clamp(32px, calc(var(--vh) * 4), 56px);
-}
-
-.qr-cta {
-  width: 100%;
-  padding: clamp(18px, calc(var(--vh) * 2.8), 36px) clamp(20px, calc(var(--vh) * 3.2), 48px);
-  border-radius: 16px;
-  background: linear-gradient(135deg, #cf2a32, #b81d27);
-  color: #ffffff;
-  font-weight: 700;
-  text-align: center;
-  box-shadow: 0 12px 26px rgba(207, 42, 50, 0.32);
-  font-size: clamp(42px, calc(var(--vh) * 5.4), 76px);
-}
-
-.qr-actions {
-  display: grid;
-  gap: clamp(14px, calc(var(--vh) * 2.2), 30px);
-  width: 100%;
-}
-
-.qr-btn {
-  width: 100%;
-  font-size: clamp(50px, calc(var(--vh) * 6.5), 80px);
-  padding-block: clamp(20px, calc(var(--vh) * 3.2), 40px);
-}
-@keyframes breathe {
-  0%, 100% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
 }
 </style>

@@ -211,10 +211,7 @@ onMounted(load);
   padding: 0;
   gap: 0;
   background:
-    radial-gradient(720px 720px at 12% 12%, rgba(255, 226, 214, 0.7), transparent 70%),
-    radial-gradient(860px 860px at 88% 16%, rgba(215, 232, 255, 0.65), transparent 70%),
-    radial-gradient(760px 760px at 84% 84%, rgba(255, 214, 226, 0.5), transparent 70%),
-    linear-gradient(150deg, rgba(246, 250, 255, 0.9) 0%, rgba(255, 244, 236, 0.9) 45%, rgba(255, 242, 250, 0.95) 100%);
+    url("/template-bg.webp") center / cover no-repeat;
 }
 
 .template-page .page-top {

@@ -9,6 +9,14 @@
       aria-label="home"
     ></button>
 
+    <button class="camera-home-btn" type="button" @click="goHome" aria-label="home">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 4.2 3 11.4v7.4a1 1 0 0 0 1 1h5.2v-5.6h5.6v5.6H20a1 1 0 0 0 1-1v-7.4l-9-7.2Z"
+        />
+      </svg>
+    </button>
+
     <img class="camera-title" :src="cameraTitle" alt="开始拍摄 Start shooting" />
     <img class="camera-note" :src="cameraNote" alt="" aria-hidden="true" />
     <div class="camera-timer" aria-live="polite">{{ timerText }}</div>
@@ -430,11 +438,7 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  background:
-    radial-gradient(1200px 1200px at 14% 18%, rgba(255, 214, 201, 0.9), transparent 68%),
-    radial-gradient(1400px 1400px at 88% 22%, rgba(255, 234, 223, 0.9), transparent 72%),
-    radial-gradient(1600px 1600px at 72% 78%, rgba(252, 209, 198, 0.7), transparent 70%),
-    linear-gradient(135deg, #f7cfc2 0%, #f8d9cf 40%, #f3c2b6 100%);
+  background: url("/template-bg.webp") center / cover no-repeat;
   z-index: 0;
   pointer-events: none;
 }
@@ -475,6 +479,30 @@ onBeforeUnmount(() => {
   z-index: 3;
 }
 
+.camera-home-btn {
+  position: absolute;
+  top: 278px;
+  left: 0;
+  width: 220px;
+  height: 220px;
+  border-radius: 0 200px 200px 0;
+  box-shadow: none;
+  background: #ba1313;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.camera-home-btn svg {
+  width: 100px;
+  height: 100px;
+}
+
+.camera-home-btn path {
+  fill: #ffffff;
+}
 
 .camera-home-hit {
   position: absolute;
@@ -529,10 +557,10 @@ onBeforeUnmount(() => {
   z-index: 3;
   display: grid;
   place-items: center;
-  font-size: 180px;
+  font-size: 450px;
   font-weight: 800;
-  background: rgba(255, 255, 255, 0.65);
-  color: #c6252d;
+  background: transparent;
+  color: #ffffff;
 }
 
 .error {
