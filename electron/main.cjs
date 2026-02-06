@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, session } = require("electron")
+const { app, BrowserWindow, Menu, ipcMain, protocol, session } = require("electron")
 const path = require("path")
 
 const APP_PROTOCOL = "app"
@@ -75,17 +75,52 @@ const setupPermissions = () => {
   )
 }
 
+const isTrustedUrlForIpc = (url) => {
+  const s = String(url || "")
+  return (
+    s.startsWith(`${APP_PROTOCOL}://`) ||
+    s.startsWith("http://localhost:") ||
+    s.startsWith("http://127.0.0.1:")
+  )
+}
+
+const assertTrustedIpcSender = (event) => {
+  const senderUrl = event?.senderFrame?.url || event?.sender?.getURL?.() || ""
+  if (!isTrustedUrlForIpc(senderUrl)) {
+    throw new Error("Blocked IPC from untrusted origin")
+  }
+}
+
 const createWindow = () => {
+  const isWindowsPackaged = process.platform === "win32" && app.isPackaged
+
   const win = new BrowserWindow({
     width: 1280,
     height: 720,
     autoHideMenuBar: true,
+    show: !isWindowsPackaged,
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   })
+
+  if (isWindowsPackaged) {
+    win.setMenuBarVisibility(false)
+    let didShow = false
+    const showFullscreen = () => {
+      if (didShow || win.isDestroyed()) return
+      didShow = true
+      win.maximize()
+      win.setFullScreen(true)
+      win.show()
+    }
+
+    win.once("ready-to-show", showFullscreen)
+    win.webContents.once("did-fail-load", showFullscreen)
+    setTimeout(showFullscreen, 8000)
+  }
 
   if (DEV_SERVER_URL) {
     win.loadURL(DEV_SERVER_URL)
@@ -96,14 +131,44 @@ const createWindow = () => {
   return win
 }
 
+const setupIpcHandlers = () => {
+  ipcMain.handle("artcamera:setFullscreen", async (event, enabled) => {
+    assertTrustedIpcSender(event)
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+    const next = Boolean(enabled)
+    win.setFullScreen(next)
+    if (!next) {
+      win.maximize()
+    }
+  })
+
+  ipcMain.handle("artcamera:isFullscreen", async (event) => {
+    assertTrustedIpcSender(event)
+    const win = BrowserWindow.fromWebContents(event.sender)
+    return Boolean(win?.isFullScreen?.())
+  })
+
+  ipcMain.handle("artcamera:quit", async (event) => {
+    assertTrustedIpcSender(event)
+    app.quit()
+  })
+}
+
 app.whenReady().then(() => {
   app.setAppUserModelId("com.artcamera.desktop")
+
+  const isWindowsPackaged = process.platform === "win32" && app.isPackaged
+  if (isWindowsPackaged) {
+    Menu.setApplicationMenu(null)
+  }
 
   if (!DEV_SERVER_URL) {
     registerAppProtocol()
   }
 
   setupPermissions()
+  setupIpcHandlers()
   createWindow()
 
   app.on("activate", () => {
