@@ -67,7 +67,7 @@ let timerId = null;
 const themes = computed(() => data.value?.themes || []);
 
 const baseUrl = import.meta.env.BASE_URL;
-const fullBgUrl = computed(() => `${baseUrl}风格选择界面整页图.webp`);
+const fullBgUrl = computed(() => `${baseUrl}backgrounds/style-select-bg.webp`);
 const fallbackIds = ["west", "real", "dimension"];
 
 async function load() {

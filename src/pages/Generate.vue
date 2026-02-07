@@ -364,7 +364,7 @@ onBeforeUnmount(() => {
   padding: 0;
   display: block;
   overflow: hidden;
-  background: url("/template-bg.webp") center / cover no-repeat;
+  background: url("/backgrounds/template-bg.webp") center / cover no-repeat;
   background-color: #ffffff;
 }
 

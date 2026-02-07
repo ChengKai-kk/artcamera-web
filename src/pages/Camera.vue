@@ -438,7 +438,7 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  background: url("/template-bg.webp") center / cover no-repeat;
+  background: url("/backgrounds/template-bg.webp") center / cover no-repeat;
   z-index: 0;
   pointer-events: none;
 }

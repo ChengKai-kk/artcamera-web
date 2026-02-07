@@ -211,7 +211,7 @@ onMounted(load);
   padding: 0;
   gap: 0;
   background:
-    url("/template-bg.webp") center / cover no-repeat;
+    url("/backgrounds/template-bg.webp") center / cover no-repeat;
 }
 
 .template-page .page-top {
