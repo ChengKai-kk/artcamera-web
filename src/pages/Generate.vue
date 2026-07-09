@@ -29,7 +29,7 @@
             <FlipCounter class="gen-flip" :value="flipValue" :digits="2" />
 
             <img class="gen-processing" :src="generateProcessingUrl" alt="照片生成中" />
-            <img class="gen-logo" :src="generateLogoUrl" alt="Jinshan Cultural Expo Park" />
+            <img class="gen-logo" :src="generateLogoUrl" alt="QingYun Cultural Expo Park" />
           </div>
         </div>
       </div>
