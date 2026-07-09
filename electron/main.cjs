@@ -109,16 +109,16 @@ const createWindow = () => {
   if (isWindowsPackaged) {
     win.setMenuBarVisibility(false)
     let didShow = false
-    const showMaximized = () => {
+    const showFullscreen = () => {
       if (didShow || win.isDestroyed()) return
       didShow = true
-      win.maximize()
+      win.setFullScreen(true)
       win.show()
     }
 
-    win.once("ready-to-show", showMaximized)
-    win.webContents.once("did-fail-load", showMaximized)
-    setTimeout(showMaximized, 8000)
+    win.once("ready-to-show", showFullscreen)
+    win.webContents.once("did-fail-load", showFullscreen)
+    setTimeout(showFullscreen, 8000)
   }
 
   if (DEV_SERVER_URL) {
